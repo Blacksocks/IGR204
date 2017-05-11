@@ -1,3 +1,9 @@
+body {
+    background: #222;
+}
+#map {
+    position: fixed;
+}
 .counties {
   fill: none;
 }
