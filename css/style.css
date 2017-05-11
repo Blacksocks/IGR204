@@ -1,6 +1,13 @@
 body {
     background: #222;
 }
+.loading {
+    margin-top: 25%;
+    font-size: 70px;
+    color: #EEE;
+    text-transform: uppercase;
+    font-family: Lato;
+}
 #map {
     position: fixed;
 }
@@ -11,4 +18,18 @@ body {
   fill: none;
   stroke: #fff;
   stroke-linejoin: round;
+}
+.contryName {
+    position: fixed;
+    display: none;
+    text-transform: uppercase;
+    font-family: Lato;
+    color: #222
+    z-index: 1;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    text-shadow: 0 0 2px #EEE;
+}
+.noselect {
+    pointer-events: none;
 }
