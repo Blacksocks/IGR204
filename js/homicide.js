@@ -109,9 +109,16 @@ function getColor(id) {
 }
 
 function hideAllStatesBut(id) {
-    for(var i = 0; i < statesData.length; i++)
+    for(var i = 0; i < statesData.length; i++) {
         if(i != idlnk[id])
             $("#state" + idlnk_[i]).attr("fill", "rgba(0, 0, 0, 0)");
+        else
+            $("#countryName" + i).css("display", "block");
+    }
+}
+
+function hideName(id) {
+    $("#countryName" + id).css("display", "none");
 }
 
 function showAllStates() {
@@ -121,6 +128,7 @@ function showAllStates() {
 
 function ready(error, us) {
     if (error) throw error;
+    $(".loading").css("display", "none");
     svg.append("g")
         .attr("class", "counties")
         .selectAll("path")
@@ -139,6 +147,7 @@ function ready(error, us) {
         })
         .on("mouseleave", function(d){
             showAllStates();
+            hideName(idlnk[parseInt(d.id)]);
         });
     // manage country index
     idlnk_.sort(function(a, b) {return a - b;});
@@ -159,18 +168,13 @@ function ready(error, us) {
     //[].sort.call( paths, function(a,b) {return a - b;});
     //paths.sort(function(a, b) {return a - b;});
     for (var i = 0; i < idlnk_.length; i++)
-        addText(paths[i], statesData[i].name);
+        addText(paths[i], statesData[i].name, i);
 }
 
-function addText(p, text)
+function addText(p, name, i)
 {
-    var t = document.createElementNS("http://www.w3.org/2000/svg", "text");
     var b = p.getBBox();
-    t.setAttribute("transform", "translate(" + (b.x * width / 1000 + b.width / 2) + " " + (b.y * width / 1000 + b.height / 2) + ")");
-    t.textContent = text;
-    t.setAttribute("fill", "#222");
-    t.setAttribute("font-size", "14");
-    t.setAttribute("font-family", "Verdana");
-    t.setAttribute("font-variant", "small-caps");
-    p.parentNode.insertBefore(t, p.nextSibling);
+    var top = Math.round(b.y * width / 1000 + b.height / 2 + $("#map").offset().top) + 6;
+    var left = Math.round(b.x * width / 1000 + b.width / 2 + $("#map").offset().left) + 16;
+    $("body").append("<div class=\"contryName noselect\" id=\"countryName" + i + "\" style=\"top:" + top + "px;left:" + left + "px\">" + name + "</div>");
 }
