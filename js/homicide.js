@@ -284,11 +284,11 @@ function menWomenColor(men, women, ethnicity)
     for(var i = 1; i < 3; i++)
         e[i] = ethnicity[i] / death + e[i-1];
     // set person color
-    for(var i = tmpNbMen; i < men; i++)
+    for(var i = 0; i < men; i++)
         $("#wp" + i).find("path").attr("style", "fill:#" + colorWallpaper(e));
     for(var i = men; i < tmpNbMen; i++)
         $("#wp" + i).find("path").attr("style", "fill:#" + WALLPAPER_EMPTY);
-    for(var i = tmpNbWomen; i < women; i++)
+    for(var i = 0; i < women; i++)
         $("#wp" + (nbWp - i - 1)).find("path").attr("style", "fill:#" + colorWallpaper(e));
     for(var i = women; i < tmpNbWomen; i++)
         $("#wp" + (nbWp - i - 1)).find("path").attr("style", "fill:#" + WALLPAPER_EMPTY);
