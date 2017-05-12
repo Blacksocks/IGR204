@@ -1,3 +1,17 @@
+/* =========================================== */
+/* ================== DEFINE ================= */
+/* =========================================== */
+
+var BLACK           = "000000";
+var WALLPAPER_WHITE = "AAAAAA";
+var WALLPAPER_EMPTY = "111111";
+var MAP_ALPHA       = "AA";
+var MAP_STROKE      = "EEEEEE";
+
+/* =========================================== */
+/* ============ CONVERSION DATA ============== */
+/* =========================================== */
+
 var statesNames = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware",
     "Washington_", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas",
     "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota",
@@ -9,6 +23,10 @@ var statesNames = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Co
 var months = ["January", "January", "February", "March", "April", "May",
     "June", "July", "August", "September", "October", "November", "December"]
 
+/* =========================================== */
+/* ================= CLASSES ================= */
+/* =========================================== */
+
 function State(name) {
     this.name = name;
     this.id = 0;
@@ -16,8 +34,12 @@ function State(name) {
     this.men = 0;    // number of death (men)
     // Black, White, Native American, Asian
     this.ethnic = [0, 0, 0, 0];
-    this.color = "#000000";
+    this.color = "#" + BLACK;
 }
+
+/* =========================================== */
+/* ============= GLOBAL VARIABLES ============ */
+/* =========================================== */
 
 // map position and size
 var ratio = 1.67; // width on height country ratio
@@ -36,15 +58,26 @@ var svg = d3.select('svg')
 var statesData = [];
 for(var i = 0; i < statesNames.length; i++)
     statesData[i] = new State(statesNames[i]);
-minDeath = 0;
-maxDeath = 0;
+var minDeath = 0;
+var maxDeath = 0;
 var path = d3.geoPath();
 // convert state id to statesNames array index
-idlnk = [];
+var idlnk = [];
 // convert statesNames array index into state id
-idlnk_ = [];
-// number of perdon into wallpaper
-nbWp = 0;
+var idlnk_ = [];
+// total number of person into wallpaper
+var nbWp = 0;
+// number of men and women display into wallpaper
+var tmpNbMen = 0;
+var tmpNbWomen = 0;
+// is the mouse overing a state
+var mouseOveringState = 0;
+// which state is currently highlighted
+var currState = -1;
+
+/* =========================================== */
+/* ================== FUNCTIONS ============== */
+/* =========================================== */
 
 function loadData()
 {
@@ -92,31 +125,46 @@ function c(x) {
 }
 
 function getColor(id) {
-    min = 50;
-    max = 230;
+    min = 65;
+    max = 190;
     val = Math.round((c(statesData[id].death) - c(minDeath)) * (max - min) / (c(maxDeath) - c(minDeath))) + min;
-    val =  256 - val; // invert
+    val_ =  256 - val; // invert
+    // from max to min
+    val_ = (val_ < 16 ? "0" : "") + val_.toString(16);
+    // from min to max
     val = (val < 16 ? "0" : "") + val.toString(16);
-    return "#ee" + val + val;
+    max = (max < 16 ? "0" : "") + max.toString(16);
+    min = (min < 16 ? "0" : "") + min.toString(16);
+    return "#" + val + val_ + min;
 }
 
 function hideAllStatesBut(id) {
-    for(var i = 0; i < statesData.length; i++) {
-        var c = $("#state" + idlnk_[i]).attr("fill").substr(1, 6);
-        if(i != idlnk[id])
-            $("#state" + idlnk_[i]).attr("fill", "#" + c + "40");
-        else
-            $("#countryName" + i).css("display", "block");
+    if(currState == -1) {
+        for(var i = 0; i < statesData.length; i++) {
+            var c = $("#state" + idlnk_[i]).attr("fill").substr(1, 6);
+            if(i != id)
+                $("#state" + idlnk_[i]).attr("fill", "#" + c + MAP_ALPHA);
+        }
     }
-}
-
-function hideName(id) {
-    $("#countryName" + id).css("display", "none");
+    else {
+        var c = $("#state" + idlnk_[id]).attr("fill").substr(1, 6);
+        $("#state" + idlnk_[id]).attr("fill", "#" + c);
+        c = $("#state" + idlnk_[currState]).attr("fill");
+        $("#state" + idlnk_[currState]).attr("fill", c + MAP_ALPHA);
+    }
 }
 
 function showAllStates() {
     for(var i = 0; i < statesData.length; i++)
         $("#state" + idlnk_[i]).attr("fill", statesData[i].color);
+}
+
+function displayName(id) {
+    $("#countryName" + id).css("display", "block");
+}
+
+function hideName(id) {
+    $("#countryName" + id).css("display", "none");
 }
 
 function dataReady(error, us) {
@@ -130,20 +178,22 @@ function dataReady(error, us) {
         .enter().append("path")
         .attr("id", function(d) {idlnk_.push(parseInt(d.id));return "state" + parseInt(d.id);})
         .attr("d", path)
-        .attr("stroke", function(d) {return "#eeeeee";})
+        .attr("stroke", function(d) {return "#" + MAP_STROKE;})
         .attr("transform", "scale(" + width / 1000 + ")")
         // on mouse event
         .on("mouseover", function(d){
+            mouseOveringState++;
+            setTimeout(mouseOveringStateHandler, 20);
             id = idlnk[parseInt(d.id)];
-            hideAllStatesBut(parseInt(d.id));
+            hideAllStatesBut(id);
+            displayName(id);
+            menWomenColor(statesData[id].men, statesData[id].death - statesData[id].men);
+            currState = id;
         })
         .on("mouseleave", function(d){
-            showAllStates();
+            setTimeout(mouseLeavingStateHandler, 10);
             hideName(idlnk[parseInt(d.id)]);
         })
-        .on("click", function(d){
-            menWomenColor(statesData[id].men, statesData[id].death);
-        });
     // manage country index
     idlnk_.sort(function(a, b) {return a - b;});
     idlnk.length = idlnk_[idlnk_.length - 1];
@@ -164,6 +214,20 @@ function dataReady(error, us) {
         addText(paths[i], statesData[i].name, i);
 
     setWallpaper();
+}
+
+function mouseOveringStateHandler()
+{
+    mouseOveringState--;
+}
+
+function mouseLeavingStateHandler()
+{
+    if(mouseOveringState)
+        return;
+    menWomenColor(0, 0);
+    showAllStates();
+    currState = -1;
 }
 
 function setWallpaper()
@@ -194,17 +258,20 @@ function setWallpaper()
     });
 }
 
-function menWomenColor(men, death)
+function menWomenColor(men, women)
 {
-    var women = death - men;
     men = Math.floor(men * nbWp / maxDeath);
     women = Math.floor(women * nbWp / maxDeath);
-    for(var i = 0; i < men; i++)
-        $("#wp" + i).find("path").attr("style", "fill:#AAAAAA");
-    for(var i = 0; i < women; i++)
-        $("#wp" + (nbWp - i - 1)).find("path").attr("style", "fill:#AAAAAA");
-    for(var i = men; i < nbWp - women; i++)
-        $("#wp" + i).find("path").attr("style", "fill:#111111");
+    for(var i = tmpNbMen; i < men; i++)
+        $("#wp" + i).find("path").attr("style", "fill:#" + WALLPAPER_WHITE);
+    for(var i = men; i < tmpNbMen; i++)
+        $("#wp" + i).find("path").attr("style", "fill:#" + WALLPAPER_EMPTY);
+    for(var i = tmpNbWomen; i < women; i++)
+        $("#wp" + (nbWp - i - 1)).find("path").attr("style", "fill:#" + WALLPAPER_WHITE);
+    for(var i = women; i < tmpNbWomen; i++)
+        $("#wp" + (nbWp - i - 1)).find("path").attr("style", "fill:#" + WALLPAPER_EMPTY);
+    tmpNbMen = men;
+    tmpNbWomen = women;
 }
 
 function addText(p, name, i)
@@ -214,5 +281,9 @@ function addText(p, name, i)
     var left = Math.round(b.x * width / 1000 + b.width / 2 + $("#map").offset().left) + 16;
     $("body").append("<div class=\"contryName noselect\" id=\"countryName" + i + "\" style=\"top:" + top + "px;left:" + left + "px\">" + name + "</div>");
 }
+
+/* =========================================== */
+/* =============== CONCRETE CODE ============= */
+/* =========================================== */
 
 loadData();
