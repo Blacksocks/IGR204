@@ -3,7 +3,10 @@
 /* =========================================== */
 
 var BLACK           = "000000";
-var WALLPAPER_WHITE = "AAAAAA";
+var WALLPAPER_WHITE = "FEE1B9";
+var WALLPAPER_NAUSA = "BF9765";
+var WALLPAPER_ASIAN = "E9A357";
+var WALLPAPER_BLACK = "633C1D";
 var WALLPAPER_EMPTY = "111111";
 var MAP_ALPHA       = "AA";
 var MAP_STROKE      = "EEEEEE";
@@ -33,7 +36,7 @@ function State(name) {
     this.death = 0;  // number of death (men + women)
     this.men = 0;    // number of death (men)
     // Black, White, Native American, Asian
-    this.ethnic = [0, 0, 0, 0];
+    this.ethnicity = [0, 0, 0, 0];
     this.color = "#" + BLACK;
 }
 
@@ -93,18 +96,20 @@ function loadData()
                     return;
                 }
             }
+            if(d["Victim Race"] == "Black")
+                statesData[stateIdx].ethnicity[0]++;
+            else if(d["Victim Race"] == "White")
+                statesData[stateIdx].ethnicity[1]++;
+            else if(d["Victim Race"] == "Native American/Alaska Native")
+                statesData[stateIdx].ethnicity[2]++;
+            else if(d["Victim Race"] == "Asian/Pacific Islander")
+                statesData[stateIdx].ethnicity[3]++;
+            else {
+                console.log("[WARNING] Ethnie not found: " + d["Victim Race"]);
+                return;
+            }
             statesData[stateIdx].death++;
             if(d["Victim Sex"] == "Male") statesData[stateIdx].men++;
-            if(d["Victim Race"] == "Black")
-                statesData[stateIdx].ethnic[0]++;
-            else if(d["Victim Race"] == "White")
-                statesData[stateIdx].ethnic[1]++;
-            else if(d["Victim Race"] == "Native American/Alaska Native")
-                statesData[stateIdx].ethnic[2]++;
-            else if(d["Victim Race"] == "Asian/Pacific Islander")
-                statesData[stateIdx].ethnic[3]++;
-            else
-                console.log("[WARNING] Ethnie not found: " + d["Victim Race"]);
         });
         //update min and max
         minDeath = statesData[0].death;
@@ -187,7 +192,7 @@ function dataReady(error, us) {
             id = idlnk[parseInt(d.id)];
             hideAllStatesBut(id);
             displayName(id);
-            menWomenColor(statesData[id].men, statesData[id].death - statesData[id].men);
+            menWomenColor(statesData[id].men, statesData[id].death - statesData[id].men, statesData[id].ethnicity);
             currState = id;
         })
         .on("mouseleave", function(d){
@@ -225,7 +230,7 @@ function mouseLeavingStateHandler()
 {
     if(mouseOveringState)
         return;
-    menWomenColor(0, 0);
+    menWomenColor(0, 0, [0, 0, 0, 0]);
     showAllStates();
     currState = -1;
 }
@@ -258,16 +263,33 @@ function setWallpaper()
     });
 }
 
-function menWomenColor(men, women)
+function colorWallpaper(e){
+    var rd = Math.random();
+    if(rd < e[0])
+        return WALLPAPER_WHITE;
+    else if(rd < e[1])
+        return WALLPAPER_NAUSA
+    else if(rd < e[2])
+        return WALLPAPER_ASIAN
+    return WALLPAPER_BLACK
+}
+
+function menWomenColor(men, women, ethnicity)
 {
+    var death = men + women;
     men = Math.floor(men * nbWp / maxDeath);
     women = Math.floor(women * nbWp / maxDeath);
+    // set ratio ethnicity (e)
+    var e = [ethnicity[0] / death, 0, 0];
+    for(var i = 1; i < 3; i++)
+        e[i] = ethnicity[i] / death + e[i-1];
+    // set person color
     for(var i = tmpNbMen; i < men; i++)
-        $("#wp" + i).find("path").attr("style", "fill:#" + WALLPAPER_WHITE);
+        $("#wp" + i).find("path").attr("style", "fill:#" + colorWallpaper(e));
     for(var i = men; i < tmpNbMen; i++)
         $("#wp" + i).find("path").attr("style", "fill:#" + WALLPAPER_EMPTY);
     for(var i = tmpNbWomen; i < women; i++)
-        $("#wp" + (nbWp - i - 1)).find("path").attr("style", "fill:#" + WALLPAPER_WHITE);
+        $("#wp" + (nbWp - i - 1)).find("path").attr("style", "fill:#" + colorWallpaper(e));
     for(var i = women; i < tmpNbWomen; i++)
         $("#wp" + (nbWp - i - 1)).find("path").attr("style", "fill:#" + WALLPAPER_EMPTY);
     tmpNbMen = men;
