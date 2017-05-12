@@ -10,6 +10,7 @@ body {
 }
 #map {
     position: fixed;
+    z-index: 1;
 }
 .counties {
   fill: none;
@@ -24,12 +25,18 @@ body {
     display: none;
     text-transform: uppercase;
     font-family: Lato;
-    color: #222
-    z-index: 1;
+    color: #050505;
     transform: translate(-50%, -50%);
     font-weight: bold;
-    text-shadow: 0 0 2px #EEE;
+    text-shadow: 0 0 4px #FFF;
+    z-index: 2;
 }
 .noselect {
     pointer-events: none;
+}
+.wallpaper {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
 }

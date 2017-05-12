@@ -40,60 +40,52 @@ minDeath = 0;
 maxDeath = 0;
 var path = d3.geoPath();
 // convert state id to statesNames array index
-idlnk = []
+idlnk = [];
 // convert statesNames array index into state id
-idlnk_ = []
+idlnk_ = [];
+// number of perdon into wallpaper
+nbWp = 0;
 
-d3.csv("data/homicides_small.csv", function(data) {
-    data.map(function(d) {
-        // for each homicide
-        stateIdx = statesNames.indexOf(d["State"]);
-        if(stateIdx == -1) {
-            // Handle case "District of Columbia" because it is also "Washingtown"
-            if(d["State"] == "District of Columbia") stateIdx = 46;
-            else {
-                console.log("[ERROR] State not found: " + d["State"]);
-                return;
+function loadData()
+{
+    d3.csv("data/homicides.csv", function(data) {
+        data.map(function(d) {
+            // for each homicide
+            stateIdx = statesNames.indexOf(d["State"]);
+            if(stateIdx == -1) {
+                // Handle case "District of Columbia" because it is also "Washingtown"
+                if(d["State"] == "District of Columbia") stateIdx = 46;
+                else {
+                    console.log("[ERROR] State not found: " + d["State"]);
+                    return;
+                }
             }
+            statesData[stateIdx].death++;
+            if(d["Victim Sex"] == "Male") statesData[stateIdx].men++;
+            if(d["Victim Race"] == "Black")
+                statesData[stateIdx].ethnic[0]++;
+            else if(d["Victim Race"] == "White")
+                statesData[stateIdx].ethnic[1]++;
+            else if(d["Victim Race"] == "Native American/Alaska Native")
+                statesData[stateIdx].ethnic[2]++;
+            else if(d["Victim Race"] == "Asian/Pacific Islander")
+                statesData[stateIdx].ethnic[3]++;
+            else
+                console.log("[WARNING] Ethnie not found: " + d["Victim Race"]);
+        });
+        //update min and max
+        minDeath = statesData[0].death;
+        maxDeath = minDeath;
+        for(var i = 1; i < statesNames.length; i++) {
+            if(statesData[i].death < minDeath) minDeath = statesData[i].death;
+            else if(statesData[i].death > maxDeath) maxDeath = statesData[i].death;
         }
-        /*infos = [+d["Year"],
-               months.indexOf(d["Month"]) + 1,
-              +d["Incident"],
-               d["Crime Type"],
-               d["Crime Solved"] == "Yes",
-               d["Victim Sex"] == "Male",
-              +d["Victim Age"],
-               d["Victim Race"],
-               d["Perpetrator Sex"] == "Male",
-              +d["Perpetrator Age"],
-               d["Perpetrator Race"],
-               d["Relationship"],
-               d["Weapon"]];*/
-        statesData[stateIdx].death++;
-        if(d["Victim Sex"] == "Male") statesData[stateIdx].men++;
-        if(d["Victim Race"] == "Black")
-            statesData[stateIdx].ethnic[0]++;
-        else if(d["Victim Race"] == "White")
-            statesData[stateIdx].ethnic[1]++;
-        else if(d["Victim Race"] == "Native American/Alaska Native")
-            statesData[stateIdx].ethnic[2]++;
-        else if(d["Victim Race"] == "Asian/Pacific Islander")
-            statesData[stateIdx].ethnic[3]++;
-        else
-            console.log("[WARNING] Ethnie not found: " + d["Victim Race"]);
+        // load map
+        d3.queue()
+            .defer(d3.json, "https://d3js.org/us-10m.v1.json")
+            .await(dataReady);
     });
-    //update min and max
-    minDeath = statesData[0].death;
-    maxDeath = minDeath;
-    for(var i = 1; i < statesNames.length; i++) {
-        if(statesData[i].death < minDeath) minDeath = statesData[i].death;
-        else if(statesData[i].death > maxDeath) maxDeath = statesData[i].death;
-    }
-    // load map
-    d3.queue()
-        .defer(d3.json, "https://d3js.org/us-10m.v1.json")
-        .await(ready);
-});
+}
 
 function c(x) {
     return Math.sqrt(x);
@@ -110,8 +102,9 @@ function getColor(id) {
 
 function hideAllStatesBut(id) {
     for(var i = 0; i < statesData.length; i++) {
+        var c = $("#state" + idlnk_[i]).attr("fill").substr(1, 6);
         if(i != idlnk[id])
-            $("#state" + idlnk_[i]).attr("fill", "rgba(0, 0, 0, 0)");
+            $("#state" + idlnk_[i]).attr("fill", "#" + c + "40");
         else
             $("#countryName" + i).css("display", "block");
     }
@@ -126,7 +119,7 @@ function showAllStates() {
         $("#state" + idlnk_[i]).attr("fill", statesData[i].color);
 }
 
-function ready(error, us) {
+function dataReady(error, us) {
     if (error) throw error;
     $(".loading").css("display", "none");
     svg.append("g")
@@ -143,11 +136,13 @@ function ready(error, us) {
         .on("mouseover", function(d){
             id = idlnk[parseInt(d.id)];
             hideAllStatesBut(parseInt(d.id));
-            document.getElementById("name").innerHTML = id + " (" + parseInt(d.id) + ")" + " - " + statesData[id].name + ", death:" + statesData[id].death;
         })
         .on("mouseleave", function(d){
             showAllStates();
             hideName(idlnk[parseInt(d.id)]);
+        })
+        .on("click", function(d){
+            menWomenColor(statesData[id].men, statesData[id].death);
         });
     // manage country index
     idlnk_.sort(function(a, b) {return a - b;});
@@ -165,10 +160,51 @@ function ready(error, us) {
     paths = [].slice.call(paths).sort(function(a,b){
         return a.id.substr(5, 2) - b.id.substr(5, 2);
     });
-    //[].sort.call( paths, function(a,b) {return a - b;});
-    //paths.sort(function(a, b) {return a - b;});
     for (var i = 0; i < idlnk_.length; i++)
         addText(paths[i], statesData[i].name, i);
+
+    setWallpaper();
+}
+
+function setWallpaper()
+{
+    var w = 20;
+    var h = 2 * w;
+    var nbX = $(window).width() / w;
+    var nbY = $(window).height() / (h + 4);
+    nbWp = Math.floor(nbX) * Math.floor(nbY);
+    var data1 = "";
+    $(".wallpaper").load('img/man.svg', function(data, text, jq){
+        data1 = data;
+        $(".wallpaper").load('img/woman.svg', function(data2, text, jq){
+            $(".wallpaper").html("");
+            var parser = new DOMParser();
+            var svgImg = parser.parseFromString(data1, "image/svg+xml").documentElement;
+            var t1 = "<svg class=\"man\" id=\"wp";
+            var t3 = "\" viewBox=\"0 0 249 497\" width=\""+w+"\" height=\""+h+"\">" + $(svgImg).html() + "</svg>";
+            var i = 0;
+            for(; i < nbWp / 2; i++)
+                $(".wallpaper").append(t1 + i + t3);
+            svgImg = parser.parseFromString(data2, "image/svg+xml").documentElement;
+            t1 = "<svg class=\"woman\" id=\"wp";
+            t3 = "\" viewBox=\"0 0 249 497\" width=\""+w+"\" height=\""+h+"\">" + $(svgImg).html() + "</svg>";
+            for(; i < nbWp; i++)
+                $(".wallpaper").append(t1 + i + t3);
+        });
+    });
+}
+
+function menWomenColor(men, death)
+{
+    var women = death - men;
+    men = Math.floor(men * nbWp / maxDeath);
+    women = Math.floor(women * nbWp / maxDeath);
+    for(var i = 0; i < men; i++)
+        $("#wp" + i).find("path").attr("style", "fill:#AAAAAA");
+    for(var i = 0; i < women; i++)
+        $("#wp" + (nbWp - i - 1)).find("path").attr("style", "fill:#AAAAAA");
+    for(var i = men; i < nbWp - women; i++)
+        $("#wp" + i).find("path").attr("style", "fill:#111111");
 }
 
 function addText(p, name, i)
@@ -178,3 +214,5 @@ function addText(p, name, i)
     var left = Math.round(b.x * width / 1000 + b.width / 2 + $("#map").offset().left) + 16;
     $("body").append("<div class=\"contryName noselect\" id=\"countryName" + i + "\" style=\"top:" + top + "px;left:" + left + "px\">" + name + "</div>");
 }
+
+loadData();
