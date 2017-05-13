@@ -2,6 +2,7 @@
 /* ================== DEFINE ================= */
 /* =========================================== */
 
+var DATA            = "data/homicides_small.csv";
 var BLACK           = "000000";
 var WALLPAPER_WHITE = "FEE1B9";
 var WALLPAPER_NAUSA = "BF9765";
@@ -86,7 +87,7 @@ var currState = -1;
 
 function loadData()
 {
-    d3.csv("data/homicides.csv", function(data) {
+    d3.csv(DATA, function(data) {
         data.map(function(d) {
             // for each homicide
             stateIdx = statesNames.indexOf(d["State"]);
@@ -254,7 +255,8 @@ function setWallpaper()
     var w = 20;
     var h = 2 * w;
     var nbX = $(window).width() / w;
-    var nbY = $(window).height() / (h + 4);
+    var maxHoffset = h * 0.3; // maxHoffset could be hidden
+    var nbY = ($(window).height() + maxHoffset) / (h + 4);
     nbWp = Math.floor(nbX) * Math.floor(nbY);
     var data1 = "";
     $(".wallpaper").load('img/man.svg', function(data, text, jq){
@@ -315,22 +317,9 @@ function menWomenColor(men, women, ethnicity)
 function addText(p, name, i)
 {
     var b = p.getBBox();
-    var top = Math.round(b.y * width / 1000 + b.height / 2 + $("#map").offset().top) + 6;
-    var left = Math.round(b.x * width / 1000 + b.width / 2 + $("#map").offset().left) + 16;
+    var top = Math.round(b.y * width / 1000 + b.height / 2 + $("#map").offset().top);
+    var left = Math.round(b.x * width / 1000 + b.width / 2 + $("#map").offset().left);
     $("body").append("<div class=\"stateName noselect\" id=\"stateName" + i + "\" style=\"top:" + top + "px;left:" + left + "px\">" + name + "</div>");
-}
-
-function showLegend()
-{
-    $("#legend").addClass("show");
-    $("#legend").find(".small").css("display", "inline-block");
-    $("#legend").find(".title").css("display", "block");
-}
-
-function hideLegend()
-{
-    $("#legend").removeClass("show");
-    $("#legend").find(".text").css("display", "none");
 }
 
 function setLegend()
@@ -341,12 +330,6 @@ function setLegend()
     $("#leg_color_4").css("background", "#" + WALLPAPER_BLACK);
     $("#leg_color_5").css("background", "#" + WALLPAPER_NAUSA);
     $("#leg_color_6").css("background", "#" + WALLPAPER_ASIAN);
-    $('#legend').on('mouseover', function() {
-        showLegend();
-    });
-    $('#legend').on('mouseout', function() {
-        hideLegend();
-    });
 }
 
 /* =========================================== */

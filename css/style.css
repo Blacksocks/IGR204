@@ -1,17 +1,24 @@
 body {
-    background: #222;
+  background: #222;
 }
 .loading {
-    margin-top: 25%;
-    font-size: 70px;
-    color: #EEE;
-    text-transform: uppercase;
-    font-family: Lato;
+  position: absolute;
+  top: calc(50% - 60px);
+  left: calc(50% - 300px);
+  height: 120px;
+  width: 600px;
+  font-size: 70px;
+  color: #EEE;
+  text-transform: uppercase;
+  font-family: Lato;
+}
+.loading .small {
+  font-size: 20.6px;
 }
 #map {
-    opacity: 0.0;
-    position: fixed;
-    z-index: 1;
+  opacity: 0.0;
+  position: fixed;
+  z-index: 1;
 }
 .counties {
   fill: none;
@@ -22,65 +29,87 @@ body {
   stroke-linejoin: round;
 }
 .stateName {
-    position: fixed;
-    display: none;
-    text-transform: uppercase;
-    font-family: Lato;
-    color: #050505;
-    transform: translate(-50%, -50%);
-    font-weight: bold;
-    text-shadow: 0 0 4px #FFF;
-    z-index: 2;
-    opacity: 0.0;
+  position: fixed;
+  display: none;
+  text-transform: uppercase;
+  font-family: Lato;
+  color: #050505;
+  transform: translate(-50%, -50%);
+  font-weight: bold;
+  text-shadow: 0 0 4px #FFF;
+  z-index: 2;
+  opacity: 0.0;
 }
 .noselect {
-    pointer-events: none;
+  pointer-events: none;
 }
 .wallpaper {
-    width: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 #legend {
-    width: 26px;
-    height: 100%;
-    position: fixed;
-    top: 0;
-    right: 0;
-    z-index: 3;
-    background: #222;
-    padding: 4px;
-    border-left: 1px solid #EEE;
-    opacity: 0.0;
-    text-align: right;
+  width: 28px;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 3;
+  background: #222;
+  padding: 4px;
+  border-left: 1px solid #EEE;
+  opacity: 0.0;
+  box-shadow: 0 0 10px #000;
+  overflow: hidden;
+  transition-duration: 300ms;
 }
-#legend.show {
-    width: 20%;
+#legend:hover {
+  width: 250px;
 }
 #legend .title {
-    font-size: 14px;
-    margin-bottom: 8px;
-    margin-top: 2px;
+  display: none;
+  font-size: 14px;
+  margin-bottom: 8px;
+  margin-top: 2px;
+  text-align: left;
+}
+#legend:hover .title {
+  display: block;
 }
 #legend .small {
-    font-size: 12px;
-    line-height: 26px;
-    vertical-align: middle;
-    padding-right: 6px;
+  font-size: 12px;
+  line-height: 26px;
+  vertical-align: middle;
+  padding-right: 6px;
+  display: none;
+  overflow: hidden;
+  white-space: nowrap;
+}
+#legend:hover .small {
+  display: inline-block;
 }
 #legend .text {
-    text-transform: uppercase;
-    font-family: Lato;
-    display: none;
-    color: #EEE;
+  text-transform: uppercase;
+  font-family: Lato;
+  color: #EEE;
 }
 #legend .color {
-    width: 26px;
-    height: 26px;
-    border: 1px solid #EEE;
-    border-radius: 2px;
-    margin-bottom: 4px;
-    display: inline-block;
-    vertical-align: middle;
+  width: 26px;
+  height: 26px;
+  border: 1px solid #EEE;
+  border-radius: 2px;
+  margin-bottom: 4px;
+  display: inline-block;
+  vertical-align: middle;
+}
+#legend table {
+  border-spacing: 0;
+  margin: 0;
+  padding: 0;
+  text-align: right;
+}
+#legend table td {
+  padding: 0;
+  margin: 0;
 }

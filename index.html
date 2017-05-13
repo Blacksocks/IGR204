@@ -1,28 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>Homicide report</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
-    <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+  <meta charset="utf-8">
+  <title>Homicide report</title>
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
 </head>
 <body>
-    <svg id="map"></svg>
-    <center><div class="loading">Data loading ...</div></center>
-    <div class="wallpaper"></div>
-    <div id="legend">
-        <div class="text title">States</div>
-        <span class="text small">Minimum number of homicides</span><div class="color" id="leg_color_1"></div><br />
-        <span class="text small">Maximum number of homicides</span><div class="color" id="leg_color_2"></div><br />
-        <div class="text title">Ethnicity</div>
-        <span class="text small">Whites</span><div class="color" id="leg_color_3"></div><br />
-        <span class="text small">Black</span><div class="color" id="leg_color_4"></div><br />
-        <span class="text small">Native American/Alaska Native</span><div class="color" id="leg_color_5"></div><br />
-        <span class="text small">Asian/Pacific Islander</span><div class="color" id="leg_color_6"></div><br />
-    </div>
-    <script type="text/javascript" src="js/jQuery-3.2.1.min.js"></script>
-    <script type="text/javascript" src="js/d3.min.js"></script>
-    <script type="text/javascript" src="js/topojson.min.js"></script>
-    <script type="text/javascript" src="js/homicide.js"></script>
+  <svg id="map"></svg>
+  <center><div class="loading">
+    Data loading ...<br />
+    <div class="small">IGR 204 - Visualization project - Telecom Paristech</div>
+  </div></center>
+  <div class="wallpaper"></div>
+  <div id="legend">
+    <!--<div class="text title">States</div>
+    <div class="text small">Minimum number of homicides</div><div class="color" id="leg_color_1"></div><br />
+    <div class="text small">Maximum number of homicides</div><div class="color" id="leg_color_2"></div><br />
+    <div class="text title">Ethnicity</div>
+    <div class="text small">Whites</div><div class="color" id="leg_color_3"></div><br />
+    <div class="text small">Black</div><div class="color" id="leg_color_4"></div><br />
+    <div class="text small">Native American/Alaska Native</div><div class="color" id="leg_color_5"></div><br />
+    <div class="text small">Asian/Pacific Islander</div><div class="color" id="leg_color_6"></div><br />
+  --><table align="right">
+      <tr><td><div class="text title">States</div></td></tr>
+      <tr><td><span class="text small">Minimum number of homicides</span></td><td><div class="color" id="leg_color_1"></div></td></tr>
+      <tr><td><span class="text small">Maximum number of homicides</span></td><td><div class="color" id="leg_color_2"></div></td></tr>
+      <tr><td><div class="text title"><br />Ethnicity</div></td></tr>
+      <tr><td><span class="text small">Whites</span></td><td><div class="color" id="leg_color_3"></div></td></tr>
+      <tr><td><span class="text small">Black</span></td><td><div class="color" id="leg_color_4"></div></td></tr>
+      <tr><td><span class="text small">Native American/Alaska Native</span></td><td><div class="color" id="leg_color_5"></div></td></tr>
+      <tr><td><span class="text small">Asian/Pacific Islander</span></td><td><div class="color" id="leg_color_6"></div></td></tr>
+    </table>
+  </div>
+  <script type="text/javascript" src="js/jQuery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="js/d3.min.js"></script>
+  <script type="text/javascript" src="js/topojson.min.js"></script>
+  <script type="text/javascript" src="js/homicide.js"></script>
 </body>
 </html>
