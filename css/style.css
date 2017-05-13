@@ -9,6 +9,7 @@ body {
     font-family: Lato;
 }
 #map {
+    opacity: 0.0;
     position: fixed;
     z-index: 1;
 }
@@ -20,7 +21,7 @@ body {
   stroke: #fff;
   stroke-linejoin: round;
 }
-.contryName {
+.stateName {
     position: fixed;
     display: none;
     text-transform: uppercase;
@@ -30,6 +31,7 @@ body {
     font-weight: bold;
     text-shadow: 0 0 4px #FFF;
     z-index: 2;
+    opacity: 0.0;
 }
 .noselect {
     pointer-events: none;
@@ -39,4 +41,46 @@ body {
     position: fixed;
     top: 0;
     left: 0;
+}
+#legend {
+    width: 26px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 3;
+    background: #222;
+    padding: 4px;
+    border-left: 1px solid #EEE;
+    opacity: 0.0;
+    text-align: right;
+}
+#legend.show {
+    width: 20%;
+}
+#legend .title {
+    font-size: 14px;
+    margin-bottom: 8px;
+    margin-top: 2px;
+}
+#legend .small {
+    font-size: 12px;
+    line-height: 26px;
+    vertical-align: middle;
+    padding-right: 6px;
+}
+#legend .text {
+    text-transform: uppercase;
+    font-family: Lato;
+    display: none;
+    color: #EEE;
+}
+#legend .color {
+    width: 26px;
+    height: 26px;
+    border: 1px solid #EEE;
+    border-radius: 2px;
+    margin-bottom: 4px;
+    display: inline-block;
+    vertical-align: middle;
 }

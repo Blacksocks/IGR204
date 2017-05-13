@@ -10,6 +10,8 @@ var WALLPAPER_BLACK = "633C1D";
 var WALLPAPER_EMPTY = "111111";
 var MAP_ALPHA       = "AA";
 var MAP_STROKE      = "EEEEEE";
+var MAP_MIN_COLOR   = "41BE41";
+var MAP_MAX_COLOR   = "BE4141";
 
 /* =========================================== */
 /* ============ CONVERSION DATA ============== */
@@ -115,7 +117,7 @@ function loadData()
         minDeath = statesData[0].death;
         maxDeath = minDeath;
         for(var i = 1; i < statesNames.length; i++) {
-            if(statesData[i].death < minDeath) minDeath = statesData[i].death;
+            if(statesData[i].death < minDeath && statesData[i].death != 0) minDeath = statesData[i].death;
             else if(statesData[i].death > maxDeath) maxDeath = statesData[i].death;
         }
         // load map
@@ -125,25 +127,26 @@ function loadData()
     });
 }
 
-function c(x) {
+function c(x)
+{
     return Math.sqrt(x);
 }
 
-function getColor(id) {
-    min = 65;
-    max = 190;
-    val = Math.round((c(statesData[id].death) - c(minDeath)) * (max - min) / (c(maxDeath) - c(minDeath))) + min;
-    val_ =  256 - val; // invert
-    // from max to min
-    val_ = (val_ < 16 ? "0" : "") + val_.toString(16);
-    // from min to max
-    val = (val < 16 ? "0" : "") + val.toString(16);
-    max = (max < 16 ? "0" : "") + max.toString(16);
-    min = (min < 16 ? "0" : "") + min.toString(16);
-    return "#" + val + val_ + min;
+function getColor(id)
+{
+    var cst = (c(statesData[id].death) - c(minDeath)) / (c(maxDeath) - c(minDeath));
+    var res = "#";
+    for(var i = 0; i < 3; i++) {
+        var minColor = parseInt("0x" + MAP_MIN_COLOR.substr(2 * i, 2).toString(10));
+        var maxColor = parseInt("0x" + MAP_MAX_COLOR.substr(2 * i, 2).toString(10));
+        var val = Math.round(cst * (maxColor - minColor) + minColor);
+        res += (val < 16 ? "0" : "") + val.toString(16);
+    }
+    return res;
 }
 
-function hideAllStatesBut(id) {
+function hideAllStatesBut(id)
+{
     if(currState == -1) {
         for(var i = 0; i < statesData.length; i++) {
             var c = $("#state" + idlnk_[i]).attr("fill").substr(1, 6);
@@ -159,22 +162,25 @@ function hideAllStatesBut(id) {
     }
 }
 
-function showAllStates() {
+function showAllStates()
+{
     for(var i = 0; i < statesData.length; i++)
         $("#state" + idlnk_[i]).attr("fill", statesData[i].color);
 }
 
-function displayName(id) {
-    $("#countryName" + id).css("display", "block");
+function displayName(id)
+{
+    $("#stateName" + id).css("display", "block");
 }
 
-function hideName(id) {
-    $("#countryName" + id).css("display", "none");
+function hideName(id)
+{
+    $("#stateName" + id).css("display", "none");
 }
 
-function dataReady(error, us) {
+function dataReady(error, us)
+{
     if (error) throw error;
-    $(".loading").css("display", "none");
     svg.append("g")
         .attr("class", "counties")
         .selectAll("path")
@@ -221,6 +227,14 @@ function dataReady(error, us) {
     setWallpaper();
 }
 
+function displayPage()
+{
+    $(".loading").css("display", "none");
+    $("#map").css("opacity", "1.0");
+    $("#legend").css("opacity", "1.0");
+    $("body").find(".stateName").css("opacity", "1.0");
+}
+
 function mouseOveringStateHandler()
 {
     mouseOveringState--;
@@ -259,6 +273,8 @@ function setWallpaper()
             t3 = "\" viewBox=\"0 0 249 497\" width=\""+w+"\" height=\""+h+"\">" + $(svgImg).html() + "</svg>";
             for(; i < nbWp; i++)
                 $(".wallpaper").append(t1 + i + t3);
+
+            displayPage();
         });
     });
 }
@@ -268,10 +284,10 @@ function colorWallpaper(e){
     if(rd < e[0])
         return WALLPAPER_WHITE;
     else if(rd < e[1])
-        return WALLPAPER_NAUSA
+        return WALLPAPER_NAUSA;
     else if(rd < e[2])
-        return WALLPAPER_ASIAN
-    return WALLPAPER_BLACK
+        return WALLPAPER_ASIAN;
+    return WALLPAPER_BLACK;
 }
 
 function menWomenColor(men, women, ethnicity)
@@ -301,11 +317,41 @@ function addText(p, name, i)
     var b = p.getBBox();
     var top = Math.round(b.y * width / 1000 + b.height / 2 + $("#map").offset().top) + 6;
     var left = Math.round(b.x * width / 1000 + b.width / 2 + $("#map").offset().left) + 16;
-    $("body").append("<div class=\"contryName noselect\" id=\"countryName" + i + "\" style=\"top:" + top + "px;left:" + left + "px\">" + name + "</div>");
+    $("body").append("<div class=\"stateName noselect\" id=\"stateName" + i + "\" style=\"top:" + top + "px;left:" + left + "px\">" + name + "</div>");
+}
+
+function showLegend()
+{
+    $("#legend").addClass("show");
+    $("#legend").find(".small").css("display", "inline-block");
+    $("#legend").find(".title").css("display", "block");
+}
+
+function hideLegend()
+{
+    $("#legend").removeClass("show");
+    $("#legend").find(".text").css("display", "none");
+}
+
+function setLegend()
+{
+    $("#leg_color_1").css("background", "#" + MAP_MIN_COLOR);
+    $("#leg_color_2").css("background", "#" + MAP_MAX_COLOR);
+    $("#leg_color_3").css("background", "#" + WALLPAPER_WHITE);
+    $("#leg_color_4").css("background", "#" + WALLPAPER_BLACK);
+    $("#leg_color_5").css("background", "#" + WALLPAPER_NAUSA);
+    $("#leg_color_6").css("background", "#" + WALLPAPER_ASIAN);
+    $('#legend').on('mouseover', function() {
+        showLegend();
+    });
+    $('#legend').on('mouseout', function() {
+        hideLegend();
+    });
 }
 
 /* =========================================== */
 /* =============== CONCRETE CODE ============= */
 /* =========================================== */
 
+setLegend();
 loadData();
