@@ -252,7 +252,7 @@ function mouseLeavingStateHandler()
 
 function setWallpaper()
 {
-    var w = 20;
+    var w = 15;
     var h = 2 * w;
     var nbX = $(window).width() / w;
     var maxHoffset = h * 0.3; // maxHoffset could be hidden
