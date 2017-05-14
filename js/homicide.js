@@ -55,8 +55,8 @@ if($(window).width() / $(window).height() > ratio) {
     height = $(window).height() * 0.8;
     width = height * ratio;
 }
-$("#map").css("top", (($(window).height() - height) / 2) + "px");
-$("#map").css("left", (($(window).width() - width) / 2) + "px");
+$("#mapsvg").css("top", (($(window).height() - height) / 2) + "px");
+$("#mapsvg").css("left", (($(window).width() - width) / 2) + "px");
 var svg = d3.select('svg')
     .style("width", width + 'px')
     .style("height", height + 'px');
@@ -206,6 +206,10 @@ function dataReady(error, us)
             setTimeout(mouseLeavingStateHandler, 10);
             hideName(idlnk[parseInt(d.id)]);
         })
+        .on("click", function(d){
+            $("#sunburst").css("display", "block");
+            $("#map").css("display", "none");
+        });
     // manage country index
     idlnk_.sort(function(a, b) {return a - b;});
     idlnk.length = idlnk_[idlnk_.length - 1];
@@ -217,21 +221,24 @@ function dataReady(error, us)
     for(var i = 0; i < idlnk_.length; i++)
         statesData[i].color = getColor(i);
     showAllStates();
-    // set states name
+    setWallpaper();
+    setStateNames();
+}
+
+function setStateNames()
+{
     var paths = document.querySelectorAll("path");
     paths = [].slice.call(paths).sort(function(a,b){
         return a.id.substr(5, 2) - b.id.substr(5, 2);
     });
     for (var i = 0; i < idlnk_.length; i++)
         addText(paths[i], statesData[i].name, i);
-
-    setWallpaper();
 }
 
 function displayPage()
 {
     $(".loading").css("display", "none");
-    $("#map").css("opacity", "1.0");
+    $("#mapsvg").css("opacity", "1.0");
     $("#legend").css("opacity", "1.0");
     $("body").find(".stateName").css("opacity", "1.0");
 }
@@ -275,13 +282,14 @@ function setWallpaper()
             t3 = "\" viewBox=\"0 0 249 497\" width=\""+w+"\" height=\""+h+"\">" + $(svgImg).html() + "</svg>";
             for(; i < nbWp; i++)
                 $(".wallpaper").append(t1 + i + t3);
-
             displayPage();
+            sunburst();
         });
     });
 }
 
-function colorWallpaper(e){
+function colorWallpaper(e)
+{
     var rd = Math.random();
     if(rd < e[0])
         return WALLPAPER_WHITE;
@@ -317,9 +325,9 @@ function menWomenColor(men, women, ethnicity)
 function addText(p, name, i)
 {
     var b = p.getBBox();
-    var top = Math.round(b.y * width / 1000 + b.height / 2 + $("#map").offset().top);
-    var left = Math.round(b.x * width / 1000 + b.width / 2 + $("#map").offset().left);
-    $("body").append("<div class=\"stateName noselect\" id=\"stateName" + i + "\" style=\"top:" + top + "px;left:" + left + "px\">" + name + "</div>");
+    var top = Math.round(b.y * width / 1000 + b.height / 2 + $("#mapsvg").offset().top);
+    var left = Math.round(b.x * width / 1000 + b.width / 2 + $("#mapsvg").offset().left);
+    $("#map").append("<div class=\"stateName noselect\" id=\"stateName" + i + "\" style=\"top:" + top + "px;left:" + left + "px\">" + name + "</div>");
 }
 
 function setLegend()

@@ -1,7 +1,7 @@
 body {
   background: #222;
 }
-.loading {
+#map .loading {
   position: absolute;
   top: calc(50% - 60px);
   left: calc(50% - 300px);
@@ -12,30 +12,30 @@ body {
   text-transform: uppercase;
   font-family: Lato;
 }
-.loading .small {
+#map .loading .small {
   font-size: 20.6px;
 }
-#map {
+#map #mapsvg {
   opacity: 0.0;
   position: fixed;
   z-index: 1;
 }
-.counties {
+#map .counties {
   fill: none;
 }
-.states {
+#map .states {
   fill: none;
   stroke: #fff;
   stroke-linejoin: round;
 }
-.stateName {
+#map .stateName {
   font-size: 14px;
-  height: 19px;
+  height: 18px;
   position: fixed;
   display: none;
   text-transform: uppercase;
   font-family: Lato;
-  padding: 0 4px;
+  padding: 2px 4px;
   background: #222;
   color: #EEE;
   transform: translate(-50%, -50%);
@@ -43,16 +43,16 @@ body {
   z-index: 2;
   opacity: 0.0;
 }
-.noselect {
+#map .noselect {
   pointer-events: none;
 }
-.wallpaper {
+#map .wallpaper {
   width: 100%;
   position: fixed;
   top: 0;
   left: 0;
 }
-#legend {
+#map #legend {
   width: 36px;
   height: 100%;
   position: fixed;
@@ -66,10 +66,10 @@ body {
   overflow: hidden;
   transition-duration: 300ms;
 }
-#legend:hover {
+#map #legend:hover {
   width: 260px;
 }
-#legend .title {
+#map #legend .title {
   display: none;
   height: 19px;
   font-size: 14px;
@@ -81,14 +81,14 @@ body {
   background: #AAA;
   text-align: left;
 }
-#legend .nomargintop {
+#map #legend .nomargintop {
   margin-top: 0;
   border-top: none;
 }
-#legend:hover .title {
+#map #legend:hover .title {
   display: block;
 }
-#legend .small {
+#map #legend .small {
   color: #AAA;
   font-size: 12px;
   line-height: 26px;
@@ -98,14 +98,14 @@ body {
   overflow: hidden;
   white-space: nowrap;
 }
-#legend:hover .small {
+#map #legend:hover .small {
   display: inline-block;
 }
-#legend .text {
+#map #legend .text {
   text-transform: uppercase;
   font-family: Lato;
 }
-#legend .color {
+#map #legend .color {
   width: 26px;
   height: 26px;
   border: 1px solid #FFF;
@@ -115,14 +115,14 @@ body {
   vertical-align: middle;
   box-shadow: 0 0 2px #222;
 }
-#legend table {
+#map #legend table {
   border-spacing: 0;
   margin: 0;
   padding: 0;
   text-align: right;
   width: 100%;
 }
-#legend table td {
+#map #legend table td {
   padding: 0;
   margin: 0;
 }
