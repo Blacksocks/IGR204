@@ -163,6 +163,17 @@ int main(int argc, char * argv[])
   for(int i = 0; i < len_path; i++)
     file_out_name[i] = argv[2][i];
   file_out_name[len_path] = '_';
+  // remove '-' into relationship status
+  char relationships_print[26][21];
+  for(int rs = 0; rs < 26; rs++) {
+    unsigned int i = 0;
+    for(; i < strlen(relationships[rs]); i++) {
+      relationships_print[rs][i] = relationships[rs][i];
+      if(relationships[rs][i] == '-')
+        relationships_print[rs][i] = ' ';
+    }
+    relationships_print[rs][i] = '\0';
+  }
   for(int i = 0; i < 50; i++)
   {
     // get output filename as /path/to/folder/prefix_statename.csv
@@ -189,7 +200,7 @@ int main(int argc, char * argv[])
         fputs("yes-", f_out);
         fputs(weapons[wp], f_out);
         fputc('-', f_out);
-        fputs(relationships[rs], f_out);
+        fputs(relationships_print[rs], f_out);
         fputc(',', f_out);
         char relationship[12];
         sprintf(relationship, "%d", states[i].relationship[wp * 16 + rs]);

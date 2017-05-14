@@ -1,3 +1,7 @@
+/* Copyright 2013 Google Inc. All Rights Reserved.
+** Licensed under the Apache License, Version 2.0
+*/
+
 // Dimensions of sunburst.
 var width = 750;
 var height = 600;
@@ -10,12 +14,54 @@ var b = {
 
 // Mapping of step names to colors.
 var colors = {
-  "home": "#5687d1",
-  "product": "#7b615c",
-  "search": "#de783b",
-  "account": "#6ab975",
-  "other": "#a173d1",
-  "end": "#bbbbbb"
+  // solved
+  "yes": "#45c966",
+  "no": "#ea5455",
+  // weapon
+  "Handgun": "#8743d4",
+  "Knife": "#66a7e1",
+  "Rifle": "#8743d4",
+  "Blunt Object": "#66a7e1",
+  "Firearm": "#ea5455",
+  "Shotgun": "#f4df46",
+  "Strangulation": "#66a7e1",
+  "Suffocation": "#f4df46",
+  "Fire": "#e97f31",
+  "Gun": "#ea5455",
+  "Explosives": "#8743d4",
+  "Drowning": "#f4df46",
+  "Poison": "#e97f31",
+  "Drugs": "#ea5455",
+  "Fall": "#e97f31",
+  // relationship
+  "Husband": "#000000",
+  "Stranger": "#000000",
+  "Acquaintance": "#000000",
+  "Family": "#000000",
+  "Wife": "#000000",
+  "Son": "#000000",
+  "Girlfriend": "#000000",
+  "Boyfriend": "#000000",
+  "Stepmother": "#000000",
+  "Friend": "#000000",
+  "Common-Law Husband": "#000000",
+  "Boyfriend/Girlfriend": "#000000",
+  "Daughter": "#000000",
+  "Mother": "#000000",
+  "Father": "#000000",
+  "Stepson": "#000000",
+  "In-Law": "#000000",
+  "Neighbor": "#000000",
+  "Brother": "#000000",
+  "Common-Law Wife": "#000000",
+  "Ex-Wife": "#000000",
+  "Employer": "#000000",
+  "Ex-Husband": "#000000",
+  "Stepdaughter": "#000000",
+  "Stepfather": "#000000",
+  "Sister": "#000000",
+  // none
+  "end": "#BBBBBB"
 };
 
 // Total size of all segments; we set this later, after loading the data.
