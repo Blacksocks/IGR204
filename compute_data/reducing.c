@@ -4,7 +4,7 @@
 int main(int argc, char * argv[])
 {
   if(argc != 4){
-    printf("Usage: ./main input_file input_file ratio\n");
+    printf("Usage: ./main input_file output_file ratio\n");
     return 1;
   }
   FILE * f_in = fopen(argv[1], "r");
