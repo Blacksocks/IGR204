@@ -1,0 +1,128 @@
+body {
+  background: #222;
+}
+#map .loading {
+  position: absolute;
+  top: calc(50% - 60px);
+  left: calc(50% - 300px);
+  height: 120px;
+  width: 600px;
+  font-size: 70px;
+  color: #EEE;
+  text-transform: uppercase;
+  font-family: Lato;
+}
+#map .loading .small {
+  font-size: 20.6px;
+}
+#map #mapsvg {
+  opacity: 0.0;
+  position: fixed;
+  z-index: 1;
+}
+#map .counties {
+  fill: none;
+}
+#map .states {
+  fill: none;
+  stroke: #fff;
+  stroke-linejoin: round;
+}
+#map .stateName {
+  font-size: 14px;
+  height: 18px;
+  position: fixed;
+  display: none;
+  text-transform: uppercase;
+  font-family: Lato;
+  padding: 2px 4px;
+  background: #222;
+  color: #EEE;
+  transform: translate(-50%, -50%);
+  font-weight: bold;
+  z-index: 2;
+  opacity: 0.0;
+}
+#map .noselect {
+  pointer-events: none;
+}
+#map .wallpaper {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+#map #legend {
+  width: 36px;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 3;
+  background: #222;
+  border-left: 1px solid #AAA;
+  opacity: 0.0;
+  box-shadow: 0 0 10px #000;
+  overflow: hidden;
+  transition-duration: 300ms;
+}
+#map #legend:hover {
+  width: 260px;
+}
+#map #legend .title {
+  display: none;
+  height: 19px;
+  font-size: 14px;
+  padding: 4px;
+  margin-top: 4px;
+  color: #222;
+  border-top: 1px solid #111;
+  border-bottom: 1px solid #111;
+  background: #AAA;
+  text-align: left;
+}
+#map #legend .nomargintop {
+  margin-top: 0;
+  border-top: none;
+}
+#map #legend:hover .title {
+  display: block;
+}
+#map #legend .small {
+  color: #AAA;
+  font-size: 12px;
+  line-height: 26px;
+  vertical-align: middle;
+  padding-right: 6px;
+  display: none;
+  overflow: hidden;
+  white-space: nowrap;
+}
+#map #legend:hover .small {
+  display: inline-block;
+}
+#map #legend .text {
+  text-transform: uppercase;
+  font-family: Lato;
+}
+#map #legend .color {
+  width: 26px;
+  height: 26px;
+  border: 1px solid #FFF;
+  border-radius: 2px;
+  margin: 4px 4px 0 4px;
+  display: inline-block;
+  vertical-align: middle;
+  box-shadow: 0 0 2px #222;
+}
+#map #legend table {
+  border-spacing: 0;
+  margin: 0;
+  padding: 0;
+  text-align: right;
+  width: 100%;
+}
+#map #legend table td {
+  padding: 0;
+  margin: 0;
+}

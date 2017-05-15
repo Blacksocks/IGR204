@@ -1,6 +1,9 @@
+
 *.csv
 Rapport/*.log
 Rapport/*.aux
 Rapport/*.pdf
 Rapport/*.backup
 Rapport/*.out
+
+data/
