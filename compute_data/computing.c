@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-//#define DEBUG 1
+//#define   DEBUG           1
+#define   NB_WEAPONS      15
+#define   NB_RELATIONSHIP 26
 
 typedef struct {
   // State name
@@ -73,7 +75,6 @@ int main(int argc, char * argv[])
 
   while(fgets(line, line_size, f_in) != NULL)
   {
-    //printf("LINE: %s\n", line);
     int comma_count = 0;
     int i = 0;
     // go to state name position
@@ -127,32 +128,44 @@ int main(int argc, char * argv[])
       relationship[tmp_idx++] = line[i++];
     i++;
     relationship[tmp_idx] = '\0';
+    // merge 'Boyfriend' and 'Girlfriend' into 'Boyfriend/Girlfriend'
+    if(!strcmp(relationship, "Boyfriend") || !strcmp(relationship, "Girlfriend"))
+        strcpy(relationship, "Boyfriend/Girlfriend");
+    // merge 'Common-Law Husband' into 'Husband'
+    if(!strcmp(relationship, "Common-Law Husband"))
+        strcpy(relationship, "Husband");
+    // merge 'Common-Law Wife' into 'Wife'
+    if(!strcmp(relationship, "Common-Law Wife"))
+        strcpy(relationship, "Wife");
 #ifdef DEBUG
-    printf("relationship: %s\n", relationship);
+    printf("relationship: >%s<\n", relationship);
 #endif
     // get relationship id
     int relationship_id = -1;
-    for(; ++relationship_id < 26;)
+    for(; ++relationship_id < NB_RELATIONSHIP;)
       if(strcmp(relationships[relationship_id], relationship) == 0)
         break;
     // get weapon
-    char weapon[14];
+    char weapon[NB_WEAPONS - 1];
     tmp_idx = 0;
     while(line[i] != ',')
       weapon[tmp_idx++] = line[i++];
     weapon[tmp_idx] = '\0';
+    // merge 'Handgun', 'Rifle', 'Shotgun' and 'Gun' into 'Firearm'
+    if(!strcmp(weapon, "Handgun") || !strcmp(weapon, "Rifle") || !strcmp(weapon, "Shotgun") || !strcmp(weapon, "Gun"))
+        strcpy(weapon, "Firearm");
 #ifdef DEBUG
     printf("weapon: %s\n", weapon);
 #endif
     // get weapon id
     int weapon_id = -1;
-    for(; ++weapon_id < 15;)
+    for(; ++weapon_id < NB_WEAPONS;)
       if(strcmp(weapons[weapon_id], weapon) == 0)
         break;
-    if(weapon_id == 15)
+    if(weapon_id == NB_WEAPONS)
       relationship_id = 0;
     // set relationship and weapon
-    states[idx].relationship[relationship_id + 16 * weapon_id]++;
+    states[idx].relationship[weapon_id * (NB_RELATIONSHIP + 1) + relationship_id]++;
   }
   fclose(f_in);
 
@@ -164,8 +177,8 @@ int main(int argc, char * argv[])
     file_out_name[i] = argv[2][i];
   file_out_name[len_path] = '_';
   // remove '-' into relationship status
-  char relationships_print[26][21];
-  for(int rs = 0; rs < 26; rs++) {
+  char relationships_print[NB_RELATIONSHIP][21];
+  for(int rs = 0; rs < NB_RELATIONSHIP; rs++) {
     unsigned int i = 0;
     for(; i < strlen(relationships[rs]); i++) {
       relationships_print[rs][i] = relationships[rs][i];
@@ -195,15 +208,21 @@ int main(int argc, char * argv[])
     sprintf(crime_not_solved, "%d", states[i].crime_not_solved);
     fputs(crime_not_solved, f_out);
     fputc('\n', f_out);
-    for(int wp = 0; wp < 15; wp++) {
-      for(int rs = 0; rs < 26; rs++) {
+    for(int wp = 0; wp < NB_WEAPONS; wp++) {
+      for(int rs = 0; rs < NB_RELATIONSHIP; rs++) {
+        if(states[i].relationship[wp * (NB_RELATIONSHIP + 1) + rs] == 0)
+            continue;
         fputs("yes-", f_out);
         fputs(weapons[wp], f_out);
         fputc('-', f_out);
-        fputs(relationships_print[rs], f_out);
+        // rename Boyfriend/Girlfriend into Boy/Girlfriend
+        if(!strcmp(relationships_print[rs], "Boyfriend/Girlfriend"))
+            fputs("Boy/Girlfriend", f_out);
+        else
+            fputs(relationships_print[rs], f_out);
         fputc(',', f_out);
         char relationship[12];
-        sprintf(relationship, "%d", states[i].relationship[wp * 16 + rs]);
+        sprintf(relationship, "%d", states[i].relationship[wp * (NB_RELATIONSHIP + 1) + rs]);
         fputs(relationship, f_out);
         fputc('\n', f_out);
       }
@@ -211,13 +230,13 @@ int main(int argc, char * argv[])
       fputs(weapons[wp], f_out);
       fputs("-end,", f_out);
       char weapon_unknown[12];
-      sprintf(weapon_unknown, "%d", states[i].relationship[wp * 16 + 26]);
+      sprintf(weapon_unknown, "%d", states[i].relationship[wp * (NB_RELATIONSHIP + 1) + NB_RELATIONSHIP]);
       fputs(weapon_unknown, f_out);
       fputc('\n', f_out);
     }
     fputs("yes-end,", f_out);
     char yes_unknown[12];
-    sprintf(yes_unknown, "%d", states[i].relationship[15 * 16]);
+    sprintf(yes_unknown, "%d", states[i].relationship[NB_WEAPONS * (NB_RELATIONSHIP + 1)]);
     fputs(yes_unknown, f_out);
     fputc('\n', f_out);
     fclose(f_out);

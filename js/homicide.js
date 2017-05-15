@@ -10,7 +10,7 @@ var WALLPAPER_ASIAN = "E9A357";
 var WALLPAPER_BLACK = "633C1D";
 var WALLPAPER_EMPTY = "111111";
 var MAP_ALPHA       = "AA";
-var MAP_STROKE      = "EEEEEE";
+var MAP_STROKE      = "222222";
 var MAP_MIN_COLOR   = "41BE41";
 var MAP_MAX_COLOR   = "BE4141";
 
@@ -194,6 +194,7 @@ function dataReady(error, us)
         .attr("transform", "scale(" + width / 1000 + ")")
         // on mouse event
         .on("mouseover", function(d){
+            console.log("[INFO] Map mouseover");
             mouseOveringState++;
             setTimeout(mouseOveringStateHandler, 20);
             id = idlnk[parseInt(d.id)];
@@ -203,10 +204,12 @@ function dataReady(error, us)
             currState = id;
         })
         .on("mouseleave", function(d){
+            console.log("[INFO] Map mouseleave");
             setTimeout(mouseLeavingStateHandler, 10);
             hideName(idlnk[parseInt(d.id)]);
         })
         .on("click", function(d){
+            sunburst(statesNames[idlnk[parseInt(d.id)]]);
             $("#sunburst").css("display", "block");
             $("#map").css("display", "none");
         });
@@ -283,7 +286,6 @@ function setWallpaper()
             for(; i < nbWp; i++)
                 $(".wallpaper").append(t1 + i + t3);
             displayPage();
-            sunburst();
         });
     });
 }

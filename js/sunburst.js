@@ -3,13 +3,15 @@
 */
 
 // Dimensions of sunburst.
-var width_chart = 750;
-var height_chart = 600;
-var radius = Math.min(width_chart, height_chart) / 2;
+var width_chart = Math.round($(window).width() * 0.8);
+var height_chart = Math.round($(window).height() * 0.8);
+width_chart = Math.min(width_chart, height_chart);
+height_chart = width_chart;
+var radius = width_chart / 2;
 
 // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
 var b = {
-  w: 75, h: 30, s: 3, t: 10
+  w: 120, h: 40, s: 3, t: 10
 };
 
 // Mapping of step names to colors.
@@ -18,50 +20,46 @@ var colors = {
   "yes": "#45c966",
   "no": "#ea5455",
   // weapon
-  "Handgun": "#8743d4",
-  "Knife": "#66a7e1",
-  "Rifle": "#8743d4",
-  "Blunt Object": "#66a7e1",
-  "Firearm": "#ea5455",
-  "Shotgun": "#f4df46",
-  "Strangulation": "#66a7e1",
-  "Suffocation": "#f4df46",
-  "Fire": "#e97f31",
-  "Gun": "#ea5455",
-  "Explosives": "#8743d4",
-  "Drowning": "#f4df46",
-  "Poison": "#e97f31",
-  "Drugs": "#ea5455",
-  "Fall": "#e97f31",
+  "Handgun": "#0070FF",
+  "Knife": "#00B4E8",
+  "Rifle": "#00B4E8",
+  "Blunt Object": "#00B4E8",
+  "Firearm": "#0070FF",
+  "Shotgun": "#0070FF",
+  "Strangulation": "#00B4E8",
+  "Suffocation": "#0070FF",
+  "Fire": "#0070FF",
+  "Gun": "#00B4E8",
+  "Explosives": "#00B4E8",
+  "Drowning": "#00B4E8",
+  "Poison": "#00B4E8",
+  "Drugs": "#00B4E8",
+  "Fall": "#0070FF",
   // relationship
-  "Husband": "#000000",
-  "Stranger": "#000000",
-  "Acquaintance": "#000000",
-  "Family": "#000000",
-  "Wife": "#000000",
-  "Son": "#000000",
-  "Girlfriend": "#000000",
-  "Boyfriend": "#000000",
-  "Stepmother": "#000000",
-  "Friend": "#000000",
-  "Common-Law Husband": "#000000",
-  "Boyfriend/Girlfriend": "#000000",
-  "Daughter": "#000000",
-  "Mother": "#000000",
-  "Father": "#000000",
-  "Stepson": "#000000",
-  "In-Law": "#000000",
-  "Neighbor": "#000000",
-  "Brother": "#000000",
-  "Common-Law Wife": "#000000",
-  "Ex-Wife": "#000000",
-  "Employer": "#000000",
-  "Ex-Husband": "#000000",
-  "Stepdaughter": "#000000",
-  "Stepfather": "#000000",
-  "Sister": "#000000",
+  "Husband": "#FFA600",
+  "Stranger": "#FFA600",
+  "Acquaintance": "#FFA600",
+  "Family": "#FFA600",
+  "Wife": "#E87300",
+  "Son": "#FFA600",
+  "Stepmother": "#FFA600",
+  "Friend": "#FFA600",
+  "Boy/Girlfriend": "#E87300",
+  "Daughter": "#E87300",
+  "Mother": "#E87300",
+  "Father": "#E87300",
+  "Stepson": "#E87300",
+  "In Law": "#E87300",
+  "Neighbor": "#E87300",
+  "Brother": "#FF4E00",
+  "Ex Wife": "#FF4E00",
+  "Employer": "#FF4E00",
+  "Ex Husband": "#FF4E00",
+  "Stepdaughter": "#FF4E00",
+  "Stepfather": "#FF4E00",
+  "Sister": "#FF4E00",
   // none
-  "end": "#BBBBBB"
+  "end": "#222222"
 };
 
 // Total size of all segments; we set this later, after loading the data.
@@ -85,9 +83,14 @@ var arc = d3.arc()
 
 // Use d3.text and d3.csvParseRows so that we do not need to have a header
 // row, and can receive the csv as an array of arrays.
-function sunburst()
+function sunburst(state)
 {
-    d3.text("data/sunburst_Alabama.csv", function(text) {
+    $("#sunburst").on("click", function(d){
+        $("#map").css("display", "block");
+        $("#sunburst").css("display", "none");
+        d3.select("#chart path").remove();
+    });
+    d3.text("data/sunburst_" + state + ".csv", function(text) {
       var csv = d3.csvParseRows(text);
       var json = buildHierarchy(csv);
       createVisualization(json);
@@ -99,8 +102,6 @@ function createVisualization(json)
 {
   // Basic setup of page elements.
   initializeBreadcrumbTrail();
-  drawLegend();
-  d3.select("#togglelegend").on("click", toggleLegend);
   // Bounding circle underneath the sunburst, to make it easier to detect
   // when the mouse leaves the parent g.
   vis.append("svg:circle")
@@ -118,21 +119,23 @@ function createVisualization(json)
   var path = vis.data([json]).selectAll("path")
       .data(nodes)
       .enter().append("svg:path")
+      .attr("class", "p_sunburst")
       .attr("display", function(d) { return d.depth ? null : "none"; })
       .attr("d", arc)
       .attr("fill-rule", "evenodd")
       .style("fill", function(d) { return colors[d.data.name]; })
       .style("opacity", 1)
-      .on("mouseover", mouseover);
+      .on("mouseover", mouseover_chart);
   // Add the mouseleave handler to the bounding circle.
-  d3.select("#container").on("mouseleave", mouseleave);
+  d3.select("#container").on("mouseleave", mouseleave_chart);
   // Get total size of the tree = value of root node from partition.
   totalSize = path.datum().value;
  };
 
 // Fade all but the current sequence, and show it in the breadcrumb trail.
-function mouseover(d)
+function mouseover_chart(d)
 {
+  console.log("[INFO] Sunburst mouseover");
   var percentage = (100 * d.value / totalSize).toPrecision(3);
   var percentageString = percentage + "%";
   if (percentage < 0.1) {
@@ -146,10 +149,10 @@ function mouseover(d)
   sequenceArray.shift(); // remove root node from the array
   updateBreadcrumbs(sequenceArray, percentageString);
   // Fade all the segments.
-  d3.selectAll("path")
+  d3.selectAll(".p_sunburst")
       .style("opacity", 0.3);
   // Then highlight only those that are an ancestor of the current segment.
-  vis.selectAll("path")
+  vis.selectAll(".p_sunburst")
       .filter(function(node) {
                 return (sequenceArray.indexOf(node) >= 0);
               })
@@ -157,21 +160,22 @@ function mouseover(d)
 }
 
 // Restore everything to full opacity when moving off the visualization.
-function mouseleave(d)
+function mouseleave_chart(d)
 {
+  console.log("[INFO] Sunburst mouseleave");
   // Hide the breadcrumb trail
   d3.select("#trail")
       .style("visibility", "hidden");
   // Deactivate all segments during transition.
-  d3.selectAll("path").on("mouseover", null);
+  d3.selectAll(".p_sunburst").on("mouseover", null);
   // Transition each segment to full opacity and then reactivate it.
-  d3.selectAll("path")
+  d3.selectAll(".p_sunburst")
       .transition()
       .duration(1000)
       .style("opacity", 1)
       .on("end", function() {
-              d3.select(this).on("mouseover", mouseover);
-            });
+              d3.select(this).on("mouseover", mouseover_chart);
+          });
   d3.select("#explanation")
       .style("visibility", "hidden");
 }
@@ -181,12 +185,12 @@ function initializeBreadcrumbTrail()
   // Add the svg area.
   var trail = d3.select("#sequence").append("svg:svg")
       .attr("width", width_chart)
-      .attr("height", 50)
+      .attr("height", 40)
       .attr("id", "trail");
   // Add the label at the end, for the percentage.
   trail.append("svg:text")
     .attr("id", "endlabel")
-    .style("fill", "#000");
+    .style("fill", "#BBBBBB");
 }
 
 // Generate a string that describes the points of a breadcrumb polygon.
@@ -223,6 +227,7 @@ function updateBreadcrumbs(nodeArray, percentageString)
       .attr("y", b.h / 2)
       .attr("dy", "0.35em")
       .attr("text-anchor", "middle")
+      .style("fill", "#222")
       .text(function(d) { return d.data.name; });
   // Merge enter and update selections; set position for all nodes.
   entering.merge(trail).attr("transform", function(d, i) {
@@ -238,44 +243,6 @@ function updateBreadcrumbs(nodeArray, percentageString)
   // Make the breadcrumb trail visible, if it's hidden.
   d3.select("#trail")
       .style("visibility", "");
-}
-
-function drawLegend()
-{
-  // Dimensions of legend item: width, height, spacing, radius of rounded rect.
-  var li = {
-    w: 75, h: 30, s: 3, r: 3
-  };
-  var legend = d3.select("#sunburst #legend").append("svg:svg")
-      .attr("width", li.w)
-      .attr("height", d3.keys(colors).length * (li.h + li.s));
-  var g = legend.selectAll("g")
-      .data(d3.entries(colors))
-      .enter().append("svg:g")
-      .attr("transform", function(d, i) {
-              return "translate(0," + i * (li.h + li.s) + ")";
-           });
-  g.append("svg:rect")
-      .attr("rx", li.r)
-      .attr("ry", li.r)
-      .attr("width", li.w)
-      .attr("height", li.h)
-      .style("fill", function(d) { return d.value; });
-  g.append("svg:text")
-      .attr("x", li.w / 2)
-      .attr("y", li.h / 2)
-      .attr("dy", "0.35em")
-      .attr("text-anchor", "middle")
-      .text(function(d) { return d.key; });
-}
-
-function toggleLegend()
-{
-  var legend = d3.select("#sunburst #legend");
-  if (legend.style("visibility") == "hidden")
-    legend.style("visibility", "");
-  else
-    legend.style("visibility", "hidden");
 }
 
 // Take a 2-column CSV and transform it into a hierarchical structure suitable
