@@ -60,7 +60,7 @@ body {
   right: 0;
   z-index: 3;
   background: #222;
-  border-left: 1px solid #AAA;
+  border-left: 1px solid #BBBBBB;
   opacity: 0.0;
   box-shadow: 0 0 10px #000;
   overflow: hidden;
@@ -78,7 +78,7 @@ body {
   color: #222;
   border-top: 1px solid #111;
   border-bottom: 1px solid #111;
-  background: #AAA;
+  background: #BBBBBB;
   text-align: left;
 }
 #map #legend .nomargintop {
@@ -89,7 +89,7 @@ body {
   display: block;
 }
 #map #legend .small {
-  color: #AAA;
+  color: #BBBBBB;
   font-size: 12px;
   line-height: 26px;
   vertical-align: middle;
