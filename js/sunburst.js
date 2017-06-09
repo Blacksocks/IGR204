@@ -71,6 +71,8 @@ var vis = d3.select("#chart").append("svg:svg")
     .append("svg:g")
     .attr("id", "container")
     .attr("transform", "translate(" + width_chart / 2 + "," + height_chart / 2 + ")");
+// Add the mouseleave handler to the bounding circle.
+d3.select("#container").on("mouseleave", mouseleave_chart);
 
 var partition = d3.partition()
     .size([2 * Math.PI, radius * radius]);
@@ -88,7 +90,7 @@ function sunburst(state)
     $("#sunburst").on("click", function(d){
         $("#map").css("display", "block");
         $("#sunburst").css("display", "none");
-        d3.select("#chart path").remove();
+        d3.select("#chart g").empty();
     });
     d3.text("data/sunburst_" + state + ".csv", function(text) {
       var csv = d3.csvParseRows(text);
@@ -126,9 +128,10 @@ function createVisualization(json)
       .style("fill", function(d) { return colors[d.data.name]; })
       .style("opacity", 1)
       .on("mouseover", mouseover_chart);
-  // Add the mouseleave handler to the bounding circle.
-  d3.select("#container").on("mouseleave", mouseleave_chart);
   // Get total size of the tree = value of root node from partition.
+  console.log(json);
+  console.log(nodes);
+  console.log(path.datum());
   totalSize = path.datum().value;
  };
 
@@ -138,11 +141,13 @@ function mouseover_chart(d)
   console.log("[INFO] Sunburst mouseover");
   var percentage = (100 * d.value / totalSize).toPrecision(3);
   var percentageString = percentage + "%";
-  if (percentage < 0.1) {
+  if (percentage < 0.1)
     percentageString = "< 0.1%";
-  }
+  var textCenterString = "";
   d3.select("#percentage")
       .text(percentageString);
+  d3.select("#textCenter")
+      .text(textCenterString);
   d3.select("#explanation")
       .style("visibility", "");
   var sequenceArray = d.ancestors().reverse();
