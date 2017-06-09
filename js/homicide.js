@@ -19,7 +19,7 @@ var MAP_MAX_COLOR   = "BE4141";
 /* =========================================== */
 
 var statesNames = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware",
-    "Washington_", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas",
+    "District of Columbia", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas",
     "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota",
     "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
     "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon",
@@ -92,12 +92,8 @@ function loadData()
             // for each homicide
             stateIdx = statesNames.indexOf(d["State"]);
             if(stateIdx == -1) {
-                // Handle case "District of Columbia" because it is also "Washingtown"
-                if(d["State"] == "District of Columbia") stateIdx = 46;
-                else {
-                    console.log("[ERROR] State not found: " + d["State"]);
-                    return;
-                }
+                console.log("[ERROR] State not found: " + d["State"]);
+                return;
             }
             if(d["Victim Race"] == "Black")
                 statesData[stateIdx].ethnicity[0]++;

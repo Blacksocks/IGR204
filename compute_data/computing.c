@@ -62,8 +62,8 @@ int main(int argc, char * argv[])
     "Common-Law Wife", "Ex-Wife", "Employer", "Ex-Husband",
     "Stepdaughter", "Stepfather", "Sister"};
   // init states
-  state_t states[50];
-  for(int i = 0; i < 50; i++)
+  state_t states[51];
+  for(int i = 0; i < 51; i++)
   {
     strcpy(states[i].name, stateNames[i]);
     states[i].crime_not_solved = 0;
@@ -96,7 +96,7 @@ int main(int argc, char * argv[])
 #endif
     // get state idx
     int idx = -1;
-    for(; ++idx < 50;)
+    for(; ++idx < 51;)
       if(strcmp(stateNames[idx], state_name) == 0)
         break;
 #ifdef DEBUG
@@ -187,7 +187,7 @@ int main(int argc, char * argv[])
     }
     relationships_print[rs][i] = '\0';
   }
-  for(int i = 0; i < 50; i++)
+  for(int i = 0; i < 51; i++)
   {
     // get output filename as /path/to/folder/prefix_statename.csv
     int idx = 0;
