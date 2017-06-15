@@ -15,6 +15,24 @@ body {
 #map .loading .small {
   font-size: 20.6px;
 }
+#map .maintitle {
+    font-family: Lato;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    text-align: center;
+    color: #EEE;
+    /*display: none;*/
+    font-size: 32px;
+    padding-top: 13px;
+    text-transform: uppercase;
+}
+#map .maintitle .small {
+    padding-left: 6px;
+    font-size: 12px;
+}
 #map #mapsvg {
   opacity: 0.0;
   position: fixed;
@@ -49,7 +67,7 @@ body {
 #map .wallpaper {
   width: 100%;
   position: fixed;
-  top: 0;
+  top: 60px;
   left: 0;
 }
 #map #legend {
