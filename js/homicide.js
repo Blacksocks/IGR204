@@ -241,9 +241,9 @@ function mouseLeavingStateHandler()
 
 function setWallpaper()
 {
-    var w = 100;
+    var w = screen.width/20;
     var h = 2 * w;
-    var margin = 10;
+    var margin = 5;
     var data1 = "";
     $(".wallpaper").load('img/man.svg', function(data, text, jq){
         data1 = data;
