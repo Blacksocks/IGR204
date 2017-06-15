@@ -223,7 +223,7 @@ function displayPage()
     $("#mapsvg").css("opacity", "1.0");
     $("#legend").css("opacity", "1.0");
     $("body").find(".stateName").css("opacity", "1.0");
-    $(".title").css("display", "inline");
+    $(".maintitle").css("display", "inline");
 }
 
 function mouseOveringStateHandler()
