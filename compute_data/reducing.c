@@ -31,17 +31,12 @@ void add_to_file(char * current_state, int * boys, int * girls, FILE * f_out)
 
 int main(int argc, char * argv[])
 {
-	if(argc != 4){
-		printf("Usage: ./main input_file output_file ratio\n");
+	if(argc != 3){
+		printf("Usage: ./main input_file output_file\n");
 		return 1;
 	}
 	FILE * f_in = fopen(argv[1], "r");
 	FILE * f_out = fopen(argv[2], "w");
-	float ratio = strtof(argv[3], NULL);
-	if(ratio <= 0 || ratio >= 1) {
-		printf("ratio should be between O and 1 (exclusive)\n");
-		return 1;
-	}
 	if(f_in == NULL){
 		printf("[ERROR] Input file does not exists\n");
 		return 1;

@@ -5,7 +5,6 @@ COMPUTE     = computing
 # arguments
 FILE_IN     = "../data/homicides.csv"
 REDUCE_OUT  = "../data/homicides_small.csv"
-RATIO       = "0.01"
 COMPUTE_OUT = "../data/sunburst"
 
 # compilation flags
@@ -18,7 +17,7 @@ default:
 	@echo "use 'make reduce' or 'make compute'"
 
 reduce: $(REDUCE)
-	./$< $(FILE_IN) $(REDUCE_OUT) $(RATIO)
+	./$< $(FILE_IN) $(REDUCE_OUT)
 	rm -f $<
 
 compute: $(COMPUTE)
