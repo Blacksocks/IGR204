@@ -96,19 +96,19 @@ function loadData()
                 return;
             }
             if(d["Victim Race"] == "Black")
-                statesData[stateIdx].ethnicity[0]++;
+                statesData[stateIdx].ethnicity[0] += +d["Number Death"];
             else if(d["Victim Race"] == "White")
-                statesData[stateIdx].ethnicity[1]++;
+                statesData[stateIdx].ethnicity[1] += +d["Number Death"];
             else if(d["Victim Race"] == "Native American/Alaska Native")
-                statesData[stateIdx].ethnicity[2]++;
+                statesData[stateIdx].ethnicity[2] += +d["Number Death"];
             else if(d["Victim Race"] == "Asian/Pacific Islander")
-                statesData[stateIdx].ethnicity[3]++;
+                statesData[stateIdx].ethnicity[3] += +d["Number Death"];
             else {
                 console.log("[WARNING] Ethnie not found: " + d["Victim Race"]);
                 return;
             }
-            statesData[stateIdx].death++;
-            if(d["Victim Sex"] == "Male") statesData[stateIdx].men++;
+            statesData[stateIdx].death += +d["Number Death"];
+            if(d["Victim Sex"] == "Male") statesData[stateIdx].men += +d["Number Death"];
         });
         //update min and max
         minDeath = statesData[0].death;
