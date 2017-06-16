@@ -10,8 +10,9 @@ COMPUTE_OUT = "../data/sunburst"
 
 # compilation flags
 CFLAGS      = -std=gnu99 -Werror -Wall -Wextra
+LDLIBS     = -lm
 
-.PHONY: reduce compute
+.PHONY: reduce compute pop
 
 default:
 	@echo "use 'make reduce' or 'make compute'"
@@ -23,3 +24,9 @@ reduce: $(REDUCE)
 compute: $(COMPUTE)
 	./$< $(FILE_IN) $(COMPUTE_OUT)
 	rm -f $<
+
+pop: mergeOnAge mergeOnOrigin mergeOnStates
+	./mergeOnAge
+	./mergeOnOrigin
+	./mergeOnStates
+	rm -f $^ "../data/us_pop_merge_on_age.txt" "../data/us_pop_merge_on_age_and_origin.txt"
