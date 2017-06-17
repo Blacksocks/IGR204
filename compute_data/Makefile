@@ -14,7 +14,7 @@ LDLIBS     = -lm
 .PHONY: reduce compute pop
 
 default:
-	@echo "use 'make reduce' or 'make compute'"
+	@echo "use 'make reduce' or 'make compute' or 'make pop'"
 
 reduce: $(REDUCE)
 	./$< $(FILE_IN) $(REDUCE_OUT)
