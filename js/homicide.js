@@ -39,8 +39,19 @@ function DeathInState(name) {
     this.death = 0;  // number of death (men + women)
     this.men = 0;    // number of death (men)
     // Black, White, Native American, Asian
-    this.ethnicity = [0, 0, 0, 0];
+    this.femaleEthnicity = [0, 0, 0, 0];
+    this.maleEthnicity = [0, 0, 0, 0];
     this.color = "#" + BLACK;
+}
+
+function PopulationInState(name) {
+  this.name = name;
+  this.id = 0;
+  this.population = 0; //Whole population
+  this.men = 0; //Number of men in population
+  //Black, White, Native, Asian
+  this.femaleEthnicity = [0, 0, 0, 0];
+  this.maleEthnicity = [0, 0, 0, 0];
 }
 
 /* =========================================== */
@@ -71,15 +82,12 @@ var path = d3.geoPath();
 var idlnk = [];
 // convert statesNames array index into state id
 var idlnk_ = [];
-// total number of person into wallpaper
-var nbWp = 0;
-// number of men and women display into wallpaper
-var tmpNbMen = 0;
-var tmpNbWomen = 0;
 // is the mouse overing a state
 var mouseOveringState = 0;
 // which state is currently highlighted
 var currState = -1;
+//Number of men and women to display. 4 men and 4 women.
+var nbMW = 4;
 
 /* =========================================== */
 /* ================== FUNCTIONS ============== */
@@ -95,14 +103,30 @@ function loadData()
                 console.log("[ERROR] State not found: " + d["State"]);
                 return;
             }
-            if(d["Victim Race"] == "Black")
-                statesData[stateIdx].ethnicity[0] += +d["Number Death"];
-            else if(d["Victim Race"] == "White")
-                statesData[stateIdx].ethnicity[1] += +d["Number Death"];
-            else if(d["Victim Race"] == "Native American/Alaska Native")
-                statesData[stateIdx].ethnicity[2] += +d["Number Death"];
-            else if(d["Victim Race"] == "Asian/Pacific Islander")
-                statesData[stateIdx].ethnicity[3] += +d["Number Death"];
+            if(d["Victim Race"] == "Black") {
+                if(d["Victim Sex"] == "Male")
+                  statesData[stateIdx].maleEthnicity[0] += +d["Number Death"];
+                else
+                  statesData[stateIdx].femaleEthnicity[0] += +d["Number Death"];
+              }
+            else if(d["Victim Race"] == "White") {
+                if(d["Victim Sex"] == "Male")
+                  statesData[stateIdx].maleEthnicity[0] += +d["Number Death"];
+                else
+                  statesData[stateIdx].femaleEthnicity[0] += +d["Number Death"];
+                }
+            else if(d["Victim Race"] == "Native American/Alaska Native") {
+                if(d["Victim Sex"] == "Male")
+                  statesData[stateIdx].maleEthnicity[0] += +d["Number Death"];
+                else
+                  statesData[stateIdx].femaleEthnicity[0] += +d["Number Death"];
+                }
+            else if(d["Victim Race"] == "Asian/Pacific Islander") {
+                if(d["Victim Sex"] == "Male")
+                  statesData[stateIdx].maleEthnicity[0] += +d["Number Death"];
+                else
+                  statesData[stateIdx].femaleEthnicity[0] += +d["Number Death"];
+                }
             else {
                 console.log("[WARNING] Ethnie not found: " + d["Victim Race"]);
                 return;
@@ -178,7 +202,7 @@ function dataReady(error, us)
             setTimeout(mouseOveringStateHandler, 20);
             id = idlnk[parseInt(d.id)];
             displayName(id);
-            menWomenColor(statesData[id].men, statesData[id].death - statesData[id].men, statesData[id].ethnicity);
+            menWomenColor(true);
             currState = id;
         })
         .on("mouseleave", function(d){
@@ -235,7 +259,7 @@ function mouseLeavingStateHandler()
 {
     if(mouseOveringState)
         return;
-    menWomenColor(0, 0, [0, 0, 0, 0]);
+    menWomenColor(false);
     currState = -1;
 }
 
@@ -251,11 +275,11 @@ function setWallpaper()
             $(".wallpaper").html("");
             var parser = new DOMParser();
             var svgImg = parser.parseFromString(data1, "image/svg+xml").documentElement;
-            var t1 = "<svg class=\"man\" id=\"wp";
+            var t1 = "<svg class=\"man\" id=\"mp";
             var t2 = "\" viewBox=\"0 0 249 497\" style=\"top: "+margin+"px;left:";
             var t3 = "px\" width=\""+w+"\" height=\""+h+"\">" + $(svgImg).html() + "</svg>";
             var i = 0;
-            for(; i < 4; i++)
+            for(; i < nbMW; i++)
                 $(".wallpaper").append(t1 + i + t2 + i*(w+6) + t3);
             svgImg = parser.parseFromString(data2, "image/svg+xml").documentElement;
             t1 = "<svg class=\"woman\" id=\"wp";
@@ -263,7 +287,7 @@ function setWallpaper()
             t3 = "px\" width=\""+w+"\" height=\""+h+"\">" + $(svgImg).html() + "</svg>";
             i = 0;
             var border = 60;
-            for(; i < 4; i++)
+            for(; i < nbMW; i++)
                 $(".wallpaper").append(t1 + i + t2 + (border + i*(w+20)) + t3);
             displayPage();
         });
@@ -272,36 +296,30 @@ function setWallpaper()
 
 function colorWallpaper(e)
 {
-    var rd = Math.random();
-    if(rd < e[0])
+    if(e == 0)
+        return WALLPAPER_BLACK;
+    else if(e == 1)
         return WALLPAPER_WHITE;
-    else if(rd < e[1])
+    else if(e == 2)
         return WALLPAPER_NAUSA;
-    else if(rd < e[2])
-        return WALLPAPER_ASIAN;
-    return WALLPAPER_BLACK;
+    return WALLPAPER_ASIAN;
 }
 
-function menWomenColor(men, women, ethnicity)
+function menWomenColor(color)
 {
-    var death = men + women;
-    men = Math.floor(men * nbWp / maxDeath);
-    women = Math.floor(women * nbWp / maxDeath);
-    // set ratio ethnicity (e)
-    var e = [ethnicity[0] / death, 0, 0];
-    for(var i = 1; i < 3; i++)
-        e[i] = ethnicity[i] / death + e[i-1];
     // set person color
-    for(var i = 0; i < men; i++)
-        $("#wp" + i).find("path").attr("style", "fill:#" + colorWallpaper(e));
-    for(var i = men; i < tmpNbMen; i++)
-        $("#wp" + i).find("path").attr("style", "fill:#" + WALLPAPER_EMPTY);
-    for(var i = 0; i < women; i++)
-        $("#wp" + (nbWp - i - 1)).find("path").attr("style", "fill:#" + colorWallpaper(e));
-    for(var i = women; i < tmpNbWomen; i++)
-        $("#wp" + (nbWp - i - 1)).find("path").attr("style", "fill:#" + WALLPAPER_EMPTY);
-    tmpNbMen = men;
-    tmpNbWomen = women;
+    if (color) {
+      for(var i = 0; i < nbMW; i++) {
+          $("#mp" + i).find("path").attr("style", "fill:#" + colorWallpaper(i));
+          $("#wp" + (nbMW-1-i)).find("path").attr("style", "fill:#" + colorWallpaper(i));
+      }
+    }
+    else {
+      for(var i = 0; i < nbMW; i++) {
+          $("#mp" + i).find("path").attr("style", "fill:#" + WALLPAPER_EMPTY);
+          $("#wp" + (nbMW-1-i)).find("path").attr("style", "fill:#" + WALLPAPER_EMPTY);
+      }
+    }
 }
 
 function addText(p, name, i)
