@@ -33,7 +33,7 @@ var months = ["January", "January", "February", "March", "April", "May",
 /* ================= CLASSES ================= */
 /* =========================================== */
 
-function State(name) {
+function DeathInState(name) {
     this.name = name;
     this.id = 0;
     this.death = 0;  // number of death (men + women)
@@ -63,7 +63,7 @@ var svg = d3.select('svg')
 // init states data
 var statesData = [];
 for(var i = 0; i < statesNames.length; i++)
-    statesData[i] = new State(statesNames[i]);
+    statesData[i] = new DeathInState(statesNames[i]);
 var minDeath = 0;
 var maxDeath = 0;
 var path = d3.geoPath();
