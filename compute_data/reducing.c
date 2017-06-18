@@ -4,13 +4,15 @@
 
 //#define DEBUG 1
 
-void add_to_file(char * current_state, int * boys, int * girls, FILE * f_out)
+void add_to_file(char * current_state, char * date, int * boys, int * girls, FILE * f_out)
 {
 	// for each race
 	for(int j = 0; j < 4; j++) {
 		// for two sex
 		for(int k = 0; k < 2; k++) {
 			fputs(current_state, f_out);
+			fputc(',', f_out);
+			fputs(date, f_out);
 			fputc(',', f_out);
 			fputs(k ? "Female" : "Male", f_out);
 			fputc(',', f_out);
@@ -50,9 +52,11 @@ int main(int argc, char * argv[])
     char current_state[21];
     int girls[] = {0, 0, 0, 0};
     int boys[] = {0, 0, 0, 0};
+	char date[4];
+	for(int i = 0; i < 4; i++) date[i] = '0';
 	// skip first line
 	fgets(line, line_size, f_in);
-    fputs("State,Victim Sex,Victim Race,Number Death\n", f_out);
+    fputs("State,Date,Victim Sex,Victim Race,Number Death\n", f_out);
 
 	int count = 0;
 
@@ -74,7 +78,6 @@ int main(int argc, char * argv[])
 		int tmp_idx = 0;
 		while(line[i] != ',')
 			state_name[tmp_idx++] = line[i++];
-		i++;
 		state_name[tmp_idx] = '\0';
 		char tmp[21] = "Worcester";
 		if(strcmp(state_name, tmp) == 0)
@@ -85,7 +88,7 @@ int main(int argc, char * argv[])
         // if the state changes, write all data into out file
         if(strcmp(current_state, state_name)) {
 			if(count != 0)
-				add_to_file(current_state, boys, girls, f_out);
+				add_to_file(current_state, date, boys, girls, f_out);
 			girls[0] = 0;
 			girls[1] = 0;
 			girls[2] = 0;
@@ -96,6 +99,11 @@ int main(int argc, char * argv[])
 			boys[3] = 0;
 			strcpy(current_state, state_name);
         }
+		// go to date
+		i++;
+		// get date
+		for(int j = 0; j < 4; j++)
+			date[j] = line[i++];
         // go to victim sex
         comma_count = 0;
         while(comma_count != 5)
@@ -125,7 +133,7 @@ int main(int argc, char * argv[])
 #endif
 continue_loop: count++;
 	}
-	add_to_file(current_state, boys, girls, f_out);
+	add_to_file(current_state, date, boys, girls, f_out);
 	fclose(f_in);
 	fclose(f_out);
 	return 0;
