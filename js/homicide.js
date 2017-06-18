@@ -2,7 +2,8 @@
 /* ================== DEFINE ================= */
 /* =========================================== */
 
-var DATA            = "data/homicides_small.csv";
+var HOMICIDES_DATA    = "data/homicides_small.csv";
+var POP_DATA        = "data/data_us_pop.csv";
 var BLACK           = "000000";
 var WALLPAPER_WHITE = "FEE1B9";
 var WALLPAPER_NAUSA = "BF9765";
@@ -71,10 +72,14 @@ $("#mapsvg").css("left", (($(window).width() - width) / 2) + "px");
 var svg = d3.select('svg')
     .style("width", width + 'px')
     .style("height", height + 'px');
-// init states data
-var statesData = [];
+//Init states population data
+var statesPopulationData = [];
 for(var i = 0; i < statesNames.length; i++)
-    statesData[i] = new DeathInState(statesNames[i]);
+    statesPopulationData[i] = new PopulationInState(statesNames[i]);
+// init states homicides data
+var statesDeathData = [];
+for(var i = 0; i < statesNames.length; i++)
+    statesDeathData[i] = new DeathInState(statesNames[i]);
 var minDeath = 0;
 var maxDeath = 0;
 var path = d3.geoPath();
@@ -95,56 +100,101 @@ var nbMW = 4;
 
 function loadData()
 {
-    d3.csv(DATA, function(data) {
-        data.map(function(d) {
-            // for each homicide
-            stateIdx = statesNames.indexOf(d["State"]);
+    d3.csv(POP_DATA, function (pdata) {
+      d3.csv(HOMICIDES_DATA, function(hdata) {
+          pdata.map(function (d) {
+            // For each entry in the population_Data.
+            var stateIdx = d["State Nb"] - 1;
             if(stateIdx == -1) {
                 console.log("[ERROR] State not found: " + d["State"]);
                 return;
             }
-            if(d["Victim Race"] == "Black") {
-                if(d["Victim Sex"] == "Male")
-                  statesData[stateIdx].maleEthnicity[0] += +d["Number Death"];
-                else
-                  statesData[stateIdx].femaleEthnicity[0] += +d["Number Death"];
-              }
-            else if(d["Victim Race"] == "White") {
-                if(d["Victim Sex"] == "Male")
-                  statesData[stateIdx].maleEthnicity[0] += +d["Number Death"];
-                else
-                  statesData[stateIdx].femaleEthnicity[0] += +d["Number Death"];
-                }
-            else if(d["Victim Race"] == "Native American/Alaska Native") {
-                if(d["Victim Sex"] == "Male")
-                  statesData[stateIdx].maleEthnicity[0] += +d["Number Death"];
-                else
-                  statesData[stateIdx].femaleEthnicity[0] += +d["Number Death"];
-                }
-            else if(d["Victim Race"] == "Asian/Pacific Islander") {
-                if(d["Victim Sex"] == "Male")
-                  statesData[stateIdx].maleEthnicity[0] += +d["Number Death"];
-                else
-                  statesData[stateIdx].femaleEthnicity[0] += +d["Number Death"];
-                }
-            else {
-                console.log("[WARNING] Ethnie not found: " + d["Victim Race"]);
+            if (d["Sex"] == 1) {//Male
+              if (d["Race"] == 1) //White
+                statesPopulationData[stateIdx].maleEthnicity[1] += d["Population"];
+              else if (d["Race"] == 2) //Black
+                statesPopulationData[stateIdx].maleEthnicity[0] += d["Population"];
+              else if (d["Race"] == 3) //Native
+                statesPopulationData[stateIdx].maleEthnicity[2] += d["Population"];
+              else if (d["Race"] == 4) //Asian
+                statesPopulationData[stateIdx].maleEthnicity[3] += d["Population"];
+              else {
+                console.log("[WARNING] Race not found!");
                 return;
+              }
             }
-            statesData[stateIdx].death += +d["Number Death"];
-            if(d["Victim Sex"] == "Male") statesData[stateIdx].men += +d["Number Death"];
-        });
-        //update min and max
-        minDeath = statesData[0].death;
-        maxDeath = minDeath;
-        for(var i = 1; i < statesNames.length; i++) {
-            if(statesData[i].death < minDeath && statesData[i].death != 0) minDeath = statesData[i].death;
-            else if(statesData[i].death > maxDeath) maxDeath = statesData[i].death;
-        }
-        // load map
-        d3.queue()
-            .defer(d3.json, "https://d3js.org/us-10m.v1.json")
-            .await(dataReady);
+            else if (d["Sex"] == 2) { //Female
+              if (d["Race"] == 1) //White
+                statesPopulationData[stateIdx].femaleEthnicity[1] += d["Population"];
+              else if (d["Race"] == 2) //Black
+                statesPopulationData[stateIdx].femaleEthnicity[0] += d["Population"];
+              else if (d["Race"] == 3) //Native
+                statesPopulationData[stateIdx].femaleEthnicity[2] += d["Population"];
+              else if (d["Race"] == 4) //Asian
+                statesPopulationData[stateIdx].femaleEthnicity[3] += d["Population"];
+              else {
+                console.log("[WARNING] Race not found!");
+                return;
+              }
+            }
+            else {
+              console.log("[WARNING] Sex not found!");
+              return;
+            }
+            statesPopulationData[stateIdx].population += d["Population"];
+            if (d["Sex"] == 1) statesPopulationData[stateIdx].men += d["Population"];
+          });
+
+          hdata.map(function(d) {
+              // for each homicide
+              var stateIdx = statesNames.indexOf(d["State"]);
+              if(stateIdx == -1) {
+                  console.log("[ERROR] State not found: " + d["State"]);
+                  return;
+              }
+              if(d["Victim Race"] == "Black") {
+                  if(d["Victim Sex"] == "Male")
+                    statesDeathData[stateIdx].maleEthnicity[0] += +d["Number Death"];
+                  else
+                    statesDeathData[stateIdx].femaleEthnicity[0] += +d["Number Death"];
+                }
+              else if(d["Victim Race"] == "White") {
+                  if(d["Victim Sex"] == "Male")
+                    statesDeathData[stateIdx].maleEthnicity[1] += +d["Number Death"];
+                  else
+                    statesDeathData[stateIdx].femaleEthnicity[1] += +d["Number Death"];
+                  }
+              else if(d["Victim Race"] == "Native American/Alaska Native") {
+                  if(d["Victim Sex"] == "Male")
+                    statesDeathData[stateIdx].maleEthnicity[2] += +d["Number Death"];
+                  else
+                    statesDeathData[stateIdx].femaleEthnicity[2] += +d["Number Death"];
+                  }
+              else if(d["Victim Race"] == "Asian/Pacific Islander") {
+                  if(d["Victim Sex"] == "Male")
+                    statesDeathData[stateIdx].maleEthnicity[3] += +d["Number Death"];
+                  else
+                    statesDeathData[stateIdx].femaleEthnicity[3] += +d["Number Death"];
+                  }
+              else {
+                  console.log("[WARNING] Ethnie not found: " + d["Victim Race"]);
+                  return;
+              }
+              statesDeathData[stateIdx].death += +d["Number Death"];
+              if(d["Victim Sex"] == "Male") statesDeathData[stateIdx].men += +d["Number Death"];
+          });
+          //update min and max
+          minDeath = statesDeathData[0].death;
+          maxDeath = minDeath;
+          for(var i = 1; i < statesNames.length; i++) {
+              if(statesDeathData[i].death < minDeath && statesDeathData[i].death != 0) minDeath = statesDeathData[i].death;
+              else if(statesDeathData[i].death > maxDeath) maxDeath = statesDeathData[i].death;
+          }
+          // load map
+          d3.queue()
+              .defer(d3.json, "https://d3js.org/us-10m.v1.json")
+              .await(dataReady);
+      });
     });
 }
 
@@ -155,7 +205,7 @@ function c(x)
 
 function getColor(id)
 {
-    var cst = (c(statesData[id].death) - c(minDeath)) / (c(maxDeath) - c(minDeath));
+    var cst = (c(statesDeathData[id].death) - c(minDeath)) / (c(maxDeath) - c(minDeath));
     var res = "#";
     for(var i = 0; i < 3; i++) {
         var minColor = parseInt("0x" + MAP_MIN_COLOR.substr(2 * i, 2).toString(10));
@@ -168,8 +218,8 @@ function getColor(id)
 
 function showAllStates()
 {
-    for(var i = 0; i < statesData.length; i++)
-        $("#state" + idlnk_[i]).attr("fill", statesData[i].color);
+    for(var i = 0; i < statesDeathData.length; i++)
+        $("#state" + idlnk_[i]).attr("fill", statesDeathData[i].color);
 }
 
 function displayName(id)
@@ -219,12 +269,12 @@ function dataReady(error, us)
     idlnk_.sort(function(a, b) {return a - b;});
     idlnk.length = idlnk_[idlnk_.length - 1];
     for(var i = 0; i < idlnk_.length; i++) {
-        statesData[i].id = idlnk_[i];
+        statesDeathData[i].id = idlnk_[i];
         idlnk[idlnk_[i]] = i;
     }
     // set color
     for(var i = 0; i < idlnk_.length; i++)
-        statesData[i].color = getColor(i);
+        statesDeathData[i].color = getColor(i);
     showAllStates();
     setWallpaper();
     setStateNames();
@@ -238,7 +288,7 @@ function setStateNames()
         return a.id.substr(5, 2) - b.id.substr(5, 2);
     });
     for (var i = 0; i < idlnk_.length; i++)
-        addText(paths[i], statesData[i].name, i);
+        addText(paths[i], statesDeathData[i].name, i);
 }
 
 function displayPage()
