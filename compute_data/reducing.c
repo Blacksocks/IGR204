@@ -31,28 +31,26 @@ void add_to_file(FILE * f_out)
 		for(int i = 0; i < 51; i++) {
 			// for each race
 			for(int j = 0; j < 4; j++) {
-				// for two sex
-				for(int k = 0; k < 2; k++) {
-					fputs(statesNames[i], f_out);
-					fputc(',', f_out);
-					char date[4];
-					sprintf(date, "%d", d + 1980);
-					fputs(date, f_out);
-					fputc(',', f_out);
-					fputs(k ? "Female" : "Male", f_out);
-					fputc(',', f_out);
-					switch(j) {
-						case 0: fputs("Black", f_out); break;
-						case 1: fputs("White", f_out); break;
-						case 2: fputs("Native American/Alaska Native", f_out); break;
-						case 3: fputs("Asian/Pacific Islander", f_out); break;
-					}
-					fputc(',', f_out);
-					char str_nb[9];
-					sprintf(str_nb, "%d", k ? states[i].b[d].b[j] : states[i].g[d].g[j]);
-					fputs(str_nb, f_out);
-					fputc('\n', f_out);
+				fputs(statesNames[i], f_out);
+				fputc(',', f_out);
+				char date[4];
+				sprintf(date, "%d", d + 1980);
+				fputs(date, f_out);
+				fputc(',', f_out);
+				switch(j) {
+					case 0: fputs("Black", f_out); break;
+					case 1: fputs("White", f_out); break;
+					case 2: fputs("Native American/Alaska Native", f_out); break;
+					case 3: fputs("Asian/Pacific Islander", f_out); break;
 				}
+				fputc(',', f_out);
+				char str_nb[9];
+				sprintf(str_nb, "%d", states[i].b[d].b[j]);
+				fputs(str_nb, f_out);
+				fputc(',', f_out);
+				sprintf(str_nb, "%d", states[i].g[d].g[j]);
+				fputs(str_nb, f_out);
+				fputc('\n', f_out);
 			}
 		}
 	}
@@ -79,7 +77,7 @@ int main(int argc, char * argv[])
     char current_state[21];
 	// skip first line
 	fgets(line, line_size, f_in);
-    fputs("State,Date,Victim Sex,Victim Race,Number Death\n", f_out);
+    fputs("State,Date,Victim Race,Men,Women\n", f_out);
 
 	int count = 0;
 	int state_idx = 0;
