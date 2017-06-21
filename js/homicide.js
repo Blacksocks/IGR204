@@ -190,22 +190,16 @@ function loadData()
                 }
                 if (year != previousYear)
                   yearDone++;
-                if(d["Victim Race"] == "Black") {
-                    statesDeathData[stateIdx].maleEthnicity[yearDone][0] += +d["Men"];
-                    statesDeathData[stateIdx].femaleEthnicity[yearDone][0] += +d["Women"];
-                } else if(d["Victim Race"] == "White") {
-                    statesDeathData[stateIdx].maleEthnicity[yearDone][1] += +d["Men"];
-                    statesDeathData[stateIdx].femaleEthnicity[yearDone][1] += +d["Women"];
-                } else if(d["Victim Race"] == "Native American/Alaska Native") {
-                    statesDeathData[stateIdx].maleEthnicity[yearDone][2] += +d["Men"];
-                    statesDeathData[stateIdx].femaleEthnicity[yearDone][2] += +d["Women"];
-                } else if(d["Victim Race"] == "Asian/Pacific Islander") {
-                    statesDeathData[stateIdx].maleEthnicity[yearDone][3] += +d["Men"];
-                    statesDeathData[stateIdx].femaleEthnicity[yearDone][3] += +d["Women"];
-                } else {
+                var raceIdx = 0;
+                if(d["Race"] == "White") raceIdx = 1;
+                else if(d["Race"] == "Native American/Alaska Native") raceIdx = 2;
+                else if(d["Race"] == "Asian/Pacific Islander") raceIdx = 3;
+                else if(d["Race"] != "Black"){
                     console.log("[WARNING] Ethnie not found: " + d["Victim Race"]);
                     return;
                 }
+                statesDeathData[stateIdx].maleEthnicity[yearDone][raceIdx] += +d["Men"];
+                statesDeathData[stateIdx].femaleEthnicity[yearDone][raceIdx] += +d["Women"];
                 statesDeathData[stateIdx].death[yearDone] += +d["Men"] + +d["Women"];
                 statesDeathData[stateIdx].men[yearDone] += +d["Men"];
                 previousYear = year;

@@ -77,7 +77,7 @@ int main(int argc, char * argv[])
     char current_state[21];
 	// skip first line
 	fgets(line, line_size, f_in);
-    fputs("State,Date,Victim Race,Men,Women\n", f_out);
+    fputs("State,Date,Race,Men,Women\n", f_out);
 
 	int count = 0;
 	int state_idx = 0;
