@@ -60,8 +60,8 @@ function PopulationInState(name) {
   this.femaleEthnicity = [26];
   this.maleEthnicity = [26];
   for (var i = 0 ; i < 26 ; i++) {
-    this.population = 0;
-    this.men = 0;
+    this.population[i] = 0;
+    this.men[i] = 0;
     this.femaleEthnicity[i] = [0, 0, 0, 0];
     this.maleEthnicity[i] = [0, 0, 0, 0];
   }
@@ -139,13 +139,13 @@ function loadData()
               yearDone++;
             if (d["Sex"] == 1) {//Male
               if (d["Race"] == 1) //White
-                statesPopulationData[stateIdx].maleEthnicity[yearDone][1] += d["Population"];
+                statesPopulationData[stateIdx].maleEthnicity[yearDone][1] += parseInt(d["Population"], 10);
               else if (d["Race"] == 2) //Black
-                statesPopulationData[stateIdx].maleEthnicity[yearDone][0] += d["Population"];
+                statesPopulationData[stateIdx].maleEthnicity[yearDone][0] += parseInt(d["Population"], 10);
               else if (d["Race"] == 3) //Native
-                statesPopulationData[stateIdx].maleEthnicity[yearDone][2] += d["Population"];
+                statesPopulationData[stateIdx].maleEthnicity[yearDone][2] += parseInt(d["Population"], 10);
               else if (d["Race"] == 4) //Asian
-                statesPopulationData[stateIdx].maleEthnicity[yearDone][3] += d["Population"];
+                statesPopulationData[stateIdx].maleEthnicity[yearDone][3] += parseInt(d["Population"], 10);
               else {
                 console.log("[WARNING] Race not found!");
                 return;
@@ -153,13 +153,13 @@ function loadData()
             }
             else if (d["Sex"] == 2) { //Female
               if (d["Race"] == 1) //White
-                statesPopulationData[stateIdx].femaleEthnicity[yearDone][1] += d["Population"];
+                statesPopulationData[stateIdx].femaleEthnicity[yearDone][1] += parseInt(d["Population"], 10);
               else if (d["Race"] == 2) //Black
-                statesPopulationData[stateIdx].femaleEthnicity[yearDone][0] += d["Population"];
+                statesPopulationData[stateIdx].femaleEthnicity[yearDone][0] += parseInt(d["Population"], 10);
               else if (d["Race"] == 3) //Native
-                statesPopulationData[stateIdx].femaleEthnicity[yearDone][2] += d["Population"];
+                statesPopulationData[stateIdx].femaleEthnicity[yearDone][2] += parseInt(d["Population"], 10);
               else if (d["Race"] == 4) //Asian
-                statesPopulationData[stateIdx].femaleEthnicity[yearDone][3] += d["Population"];
+                statesPopulationData[stateIdx].femaleEthnicity[yearDone][3] += parseInt(d["Population"], 10);
               else {
                 console.log("[WARNING] Race not found!");
                 return;
@@ -169,8 +169,8 @@ function loadData()
               console.log("[WARNING] Sex not found!");
               return;
             }
-            statesPopulationData[stateIdx].population[yearDone] += d["Population"];
-            if (d["Sex"] == 1) statesPopulationData[stateIdx].men[yearDone] += d["Population"];
+            statesPopulationData[stateIdx].population[yearDone] += parseInt(d["Population"], 10);
+            if (d["Sex"] == 1) statesPopulationData[stateIdx].men[yearDone] += parseInt(d["Population"], 10);
             previousYear = year;
           });
           yearDone = 0, previousYear = 1990;
