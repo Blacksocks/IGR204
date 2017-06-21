@@ -282,9 +282,7 @@ function dataReady(error, us)
             hideName(idlnk[parseInt(d.id)]);
         })
         .on("click", function(d){
-            sunburst(statesNames[idlnk[parseInt(d.id)]]);
-            $("#sunburst").css("display", "block");
-            $("#map").css("display", "none");
+            window.open("sunburst.html?state=" + statesNames[idlnk[parseInt(d.id)]], "_blank");
         });
     // manage country index
     idlnk_.sort(function(a, b) {return a - b;});
