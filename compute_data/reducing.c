@@ -10,8 +10,8 @@ typedef struct death_s {
 } death_t;
 
 typedef struct state_s {
-	death_t b[24]; // boys from 1980 to 2014
-	death_t g[24]; // girls from 1980 to 2014
+	death_t b[25]; // boys from 1990 to 2014
+	death_t g[25]; // girls from 1990 to 2014
 } state_t;
 
 state_t states[51];
@@ -26,15 +26,16 @@ char statesNames[51][21] = {"Alabama", "Alaska", "Arizona", "Arkansas", "Califor
 void add_to_file(FILE * f_out)
 {
 	// for each date
-	for(int d = 0; d < 34; d++) {
+	for(int d = 0; d <= 24; d++) {
 		// for each state
 		for(int i = 0; i < 51; i++) {
 			// for each race
 			for(int j = 0; j < 4; j++) {
 				fputs(statesNames[i], f_out);
 				fputc(',', f_out);
-				char date[4];
-				sprintf(date, "%d", d + 1980);
+				char date[5];
+				//printf("date: %d\n", d + 1990);
+				sprintf(date, "%d", d + 1990);
 				fputs(date, f_out);
 				fputc(',', f_out);
 				switch(j) {
@@ -126,7 +127,9 @@ int main(int argc, char * argv[])
 			date += (line[i++] - '0') * power;
 			power /= 10;
 		}
-		date -= 1980;
+		date -= 1990;
+		if(date < 0)
+			continue;
         // go to victim sex
         comma_count = 0;
         while(comma_count != 5)
