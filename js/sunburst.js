@@ -3,6 +3,11 @@
  ** Deeply modified by Vincent Gaillard
  */
 
+ var COLOR_NO       = "ea5455";
+ var COLOR_YES      = "45c966";
+ var COLOR_WEAPON   = "0070FF";
+ var COLOR_RELATION = "E87300";
+
 // Dimensions of sunburst.
 var width_chart = Math.round($(window).width() * 0.8);
 var height_chart = Math.round($(window).height() * 0.8);
@@ -18,8 +23,8 @@ var b = {
 // Mapping of step names to colors.
 var colors = {
 	// solved
-	"yes": "#45c966",
-	"no": "#ea5455",
+	"yes": "#" + COLOR_YES,
+	"no": "#" + COLOR_NO,
 	// weapon
 	"Handgun": "#0070FF",
 	"Knife": "#00B4E8",
@@ -89,9 +94,7 @@ var arc = d3.arc()
 function sunburst(state)
 {
 	$("#sunburst").on("click", function(d){
-        d3.select("#chart g").empty();
-		$("#map").css("display", "block");
-		$("#sunburst").css("display", "none");
+	    window.close();
 	});
 	d3.text("data/sunburst_" + state + ".csv", function(text) {
 		var csv = d3.csvParseRows(text);
@@ -136,12 +139,19 @@ function createVisualization(json)
 // Fade all but the current sequence, and show it in the breadcrumb trail.
 function mouseover_chart(d)
 {
-	console.log("[INFO] Sunburst mouseover");
+	console.log(d);
 	var percentage = (100 * d.value / totalSize).toPrecision(3);
 	var percentageString = percentage + "%";
 	if (percentage < 0.1)
 		percentageString = "< 0.1%";
 	var textCenterString = "";
+    if(d.depth == 1) {
+        if(d.data.name == "yes") textCenterString = "of perpretators were found";
+        else textCenterString = "of perpretators were not found";
+    } else if (d.depth == 2)
+        textCenterString = "of murders were made using " + d.data.name.toLowerCase();
+    else if (d.depth == 3)
+        textCenterString = "of murders were made using " + d.parent.data.name.toLowerCase() + " by a " + d.data.name.toLowerCase();
 	d3.select("#percentage")
 		.text(percentageString);
 	d3.select("#textCenter")
@@ -165,7 +175,6 @@ function mouseover_chart(d)
 // Restore everything to full opacity when moving off the visualization.
 function mouseleave_chart(d)
 {
-	console.log("[INFO] Sunburst mouseleave");
 	// Hide the breadcrumb trail
 	d3.select("#trail")
 		.style("visibility", "hidden");
@@ -177,8 +186,8 @@ function mouseleave_chart(d)
 		.duration(1000)
 		.style("opacity", 1)
 		.on("end", function() {
-				d3.select(this).on("mouseover", mouseover_chart);
-				});
+			d3.select(this).on("mouseover", mouseover_chart);
+		});
 	d3.select("#explanation")
 		.style("visibility", "hidden");
 }
@@ -292,5 +301,14 @@ function buildHierarchy(csv)
 	return root;
 };
 
+function setLegend()
+{
+    $("#leg_color_1").css("background", "#" + COLOR_YES);
+    $("#leg_color_2").css("background", "#" + COLOR_NO);
+    $("#leg_color_3").css("background", "#" + COLOR_WEAPON);
+    $("#leg_color_4").css("background", "#" + COLOR_RELATION);
+}
+
 var url = new URL(window.location.href);
 sunburst(url.searchParams.get("state"));
+setLegend();
