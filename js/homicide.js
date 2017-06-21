@@ -93,6 +93,9 @@ var mouseOveringState = 0;
 var currState = -1;
 //Number of men and women to display. 4 men and 4 women.
 var nbMW = 4;
+//Top and bottom margins for men and women display
+var marginTop = 20;
+var marginBottom = 5;
 
 /* =========================================== */
 /* ================== FUNCTIONS ============== */
@@ -317,7 +320,6 @@ function setWallpaper()
 {
     var w = screen.width/20;
     var h = 2 * w;
-    var margin = 5;
     var data1 = "";
     $(".wallpaper").load('img/man.svg', function(data, text, jq){
         data1 = data;
@@ -326,19 +328,26 @@ function setWallpaper()
             var parser = new DOMParser();
             var svgImg = parser.parseFromString(data1, "image/svg+xml").documentElement;
             var t1 = "<svg class=\"man\" id=\"mp";
-            var t2 = "\" viewBox=\"0 0 249 497\" style=\"top: "+margin+"px;left:";
+            var t2 = "\" viewBox=\"0 0 249 497\" style=\"top: "+marginTop+"px;left:";
             var t3 = "px\" width=\""+w+"\" height=\""+h+"\">" + $(svgImg).html() + "</svg>";
             var i = 0;
-            for(; i < nbMW; i++)
-                $(".wallpaper").append(t1 + i + t2 + i*(w+6) + t3);
+            var left = [nbMW];
+            for(; i < nbMW; i++) {
+                left[i] = i*(w+6);
+                $(".wallpaper").append(t1 + i + t2 + left[i] + t3);
+              }
             svgImg = parser.parseFromString(data2, "image/svg+xml").documentElement;
             t1 = "<svg class=\"woman\" id=\"wp";
-            t2 = "\" viewBox=\"0 0 249 497\" style=\"bottom: "+margin+"px; right:";
+            t2 = "\" viewBox=\"0 0 249 497\" style=\"bottom: "+marginBottom+"px; right:";
             t3 = "px\" width=\""+w+"\" height=\""+h+"\">" + $(svgImg).html() + "</svg>";
             i = 0;
             var border = 60;
-            for(; i < nbMW; i++)
-                $(".wallpaper").append(t1 + i + t2 + (border + i*(w+20)) + t3);
+            var right = [nbMW];
+            for(; i < nbMW; i++) {
+                right[i] = border + i*(w+20);
+                $(".wallpaper").append(t1 + i + t2 + right[i] + t3);
+            }
+            addDescriptionMW(left, right);
             displayPage();
         });
     });
@@ -378,6 +387,14 @@ function addText(p, name, i)
     var top = Math.round(b.y * width / 1000 + b.height / 2 + $("#mapsvg").offset().top);
     var left = Math.round(b.x * width / 1000 + b.width / 2 + $("#mapsvg").offset().left);
     $("#map").append("<div class=\"stateName noselect\" id=\"stateName" + i + "\" style=\"top:" + top + "px;left:" + left + "px\">" + name + "</div>");
+}
+
+function addDescriptionMW(left, right) {
+  var name = ["Black", "White", "Native", "Asian"];
+  for (var i = 0 ; i < nbMW ; i++) {
+  $(".wallpaper").append("<div class=\"descriptionMW noselect\" id=\"description" + 2*i + "\" style=\"top:" + (marginTop-20) + "px;left:" + (left[i]+13) + "px\">" + name[i] + "</div>");
+  $(".wallpaper").append("<div class=\"descriptionMW noselect\" id=\"description" + (2*i+1) + "\" style=\"bottom:" + (marginBottom+ $("#wp1").height()) + "px;right:" + (right[nbMW - 1 - i]+11)+ "px\">" + name[i] + "</div>");
+  }
 }
 
 function setLegend()

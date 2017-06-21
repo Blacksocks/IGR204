@@ -74,6 +74,12 @@ body {
 #map .wallpaper .woman, #map .wallpaper .man {
   position: absolute;
 }
+#map .wallpaper .descriptionMW {
+  color: #EEE;
+  font-weight: bold;
+  position: absolute;
+  opacity: 0.3;
+}
 #map #legend {
   width: 36px;
   height: 100%;
