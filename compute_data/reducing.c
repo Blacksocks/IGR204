@@ -4,29 +4,56 @@
 
 //#define DEBUG 1
 
-void add_to_file(char * current_state, char * date, int * boys, int * girls, FILE * f_out)
+typedef struct death_s {
+	int b[4]; // boys number of death per origin
+	int g[4]; // girls number of death per origin
+} death_t;
+
+typedef struct state_s {
+	death_t b[24]; // boys from 1980 to 2014
+	death_t g[24]; // girls from 1980 to 2014
+} state_t;
+
+state_t states[51];
+char statesNames[51][21] = {"Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware",
+    "District of Columbia", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas",
+    "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota",
+    "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
+    "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon",
+    "Pennsylvania", "Rhodes Island", "South Carolina", "South Dakota", "Tennessee", "Texas",
+    "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"};
+
+void add_to_file(FILE * f_out)
 {
-	// for each race
-	for(int j = 0; j < 4; j++) {
-		// for two sex
-		for(int k = 0; k < 2; k++) {
-			fputs(current_state, f_out);
-			fputc(',', f_out);
-			fputs(date, f_out);
-			fputc(',', f_out);
-			fputs(k ? "Female" : "Male", f_out);
-			fputc(',', f_out);
-			switch(j) {
-				case 0: fputs("Black", f_out); break;
-				case 1: fputs("White", f_out); break;
-				case 2: fputs("Native American/Alaska Native", f_out); break;
-				case 3: fputs("Asian/Pacific Islander", f_out); break;
+	// for each date
+	for(int d = 0; d < 34; d++) {
+		// for each state
+		for(int i = 0; i < 51; i++) {
+			// for each race
+			for(int j = 0; j < 4; j++) {
+				// for two sex
+				for(int k = 0; k < 2; k++) {
+					fputs(statesNames[i], f_out);
+					fputc(',', f_out);
+					char date[4];
+					sprintf(date, "%d", d + 1980);
+					fputs(date, f_out);
+					fputc(',', f_out);
+					fputs(k ? "Female" : "Male", f_out);
+					fputc(',', f_out);
+					switch(j) {
+						case 0: fputs("Black", f_out); break;
+						case 1: fputs("White", f_out); break;
+						case 2: fputs("Native American/Alaska Native", f_out); break;
+						case 3: fputs("Asian/Pacific Islander", f_out); break;
+					}
+					fputc(',', f_out);
+					char str_nb[9];
+					sprintf(str_nb, "%d", k ? states[i].b[d].b[j] : states[i].g[d].g[j]);
+					fputs(str_nb, f_out);
+					fputc('\n', f_out);
+				}
 			}
-			fputc(',', f_out);
-			char str_nb[9];
-			sprintf(str_nb, "%d", k ? boys[j] : girls[j]);
-			fputs(str_nb, f_out);
-			fputc('\n', f_out);
 		}
 	}
 }
@@ -50,23 +77,22 @@ int main(int argc, char * argv[])
 	int line_size = 512;
 	char * line = malloc(line_size);
     char current_state[21];
-    int girls[] = {0, 0, 0, 0};
-    int boys[] = {0, 0, 0, 0};
-	char date[4];
-	for(int i = 0; i < 4; i++) date[i] = '0';
 	// skip first line
 	fgets(line, line_size, f_in);
     fputs("State,Date,Victim Sex,Victim Race,Number Death\n", f_out);
 
 	int count = 0;
+	int state_idx = 0;
 
 	while(fgets(line, line_size, f_in) != NULL)
 	{
 		// remove lines where '"' are used
 		int idx_rm_specials = 0;
 		while(line[idx_rm_specials++] != '\n')
-			if(line[idx_rm_specials] == '"')
+			if(line[idx_rm_specials] == '"') {
+				//printf("[STRANGE LINE] %s\n", line);
 				goto continue_loop;
+			}
 		int comma_count = 0;
 		int i = 0;
 		// go to state name position
@@ -79,31 +105,30 @@ int main(int argc, char * argv[])
 		while(line[i] != ',')
 			state_name[tmp_idx++] = line[i++];
 		state_name[tmp_idx] = '\0';
-		char tmp[21] = "Worcester";
-		if(strcmp(state_name, tmp) == 0)
-			printf("%s\n", line);
 #ifdef DEBUG
 		printf("state_name: %s, ", state_name);
 #endif
         // if the state changes, write all data into out file
         if(strcmp(current_state, state_name)) {
-			if(count != 0)
-				add_to_file(current_state, date, boys, girls, f_out);
-			girls[0] = 0;
-			girls[1] = 0;
-			girls[2] = 0;
-			girls[3] = 0;
-			boys[0] = 0;
-			boys[1] = 0;
-			boys[2] = 0;
-			boys[3] = 0;
+			// get country idx
+			state_idx = 0;
+			for(int j = 0; j < 51; j++)
+				if(strcmp(state_name, statesNames[j]) == 0){
+					state_idx = j;
+					break;
+				}
 			strcpy(current_state, state_name);
         }
 		// go to date
 		i++;
 		// get date
-		for(int j = 0; j < 4; j++)
-			date[j] = line[i++];
+		int date = 0;
+		int power = 1000;
+		for(int j = 0; j < 4; j++) {
+			date += (line[i++] - '0') * power;
+			power /= 10;
+		}
+		date -= 1980;
         // go to victim sex
         comma_count = 0;
         while(comma_count != 5)
@@ -123,17 +148,18 @@ int main(int argc, char * argv[])
 				comma_count++;
         // get victim race
         switch(line[i]) {
-            case 'B': (sex) ? girls[0]++ : boys[0]++; break; // Black
-            case 'W': (sex) ? girls[1]++ : boys[1]++; break; // White
-            case 'N': (sex) ? girls[2]++ : boys[2]++; break; // Native
-            case 'A': (sex) ? girls[3]++ : boys[3]++; break; // Asian
+            case 'B': (sex) ? states[state_idx].g[date].g[0]++ : states[state_idx].b[date].b[0]++; break; // Black
+            case 'W': (sex) ? states[state_idx].g[date].g[1]++ : states[state_idx].b[date].b[1]++; break; // White
+            case 'N': (sex) ? states[state_idx].g[date].g[2]++ : states[state_idx].b[date].b[2]++; break; // Native
+            case 'A': (sex) ? states[state_idx].g[date].g[3]++ : states[state_idx].b[date].b[3]++; break; // Asian
         }
 #ifdef DEBUG
 		printf("race: %c\n", line[i]);
 #endif
+		// add infos to data variable
 continue_loop: count++;
 	}
-	add_to_file(current_state, date, boys, girls, f_out);
+	add_to_file(f_out);
 	fclose(f_in);
 	fclose(f_out);
 	return 0;
