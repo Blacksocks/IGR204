@@ -37,22 +37,35 @@ var months = ["January", "January", "February", "March", "April", "May",
 function DeathInState(name) {
     this.name = name;
     this.id = 0;
-    this.death = 0;  // number of death (men + women)
-    this.men = 0;    // number of death (men)
+    this.death = [26];  // number of death (men + women)
+    this.men = [26];    // number of death (men)
     // Black, White, Native American, Asian
-    this.femaleEthnicity = [0, 0, 0, 0];
-    this.maleEthnicity = [0, 0, 0, 0];
+    this.femaleEthnicity = [26];
+    this.maleEthnicity = [26];
+    for (var i = 0 ; i < 26 ; i++) {
+      this.death[i] = 0;
+      this.men[i] = 0;
+      this.femaleEthnicity[i] = [0, 0, 0, 0];
+      this.maleEthnicity[i] = [0, 0, 0, 0];
+    }
     this.color = "#" + BLACK;
 }
 
 function PopulationInState(name) {
   this.name = name;
   this.id = 0;
-  this.population = 0; //Whole population
-  this.men = 0; //Number of men in population
+  this.population = [26]; //Whole population
+  this.men = [26]; //Number of men in population
   //Black, White, Native, Asian
-  this.femaleEthnicity = [0, 0, 0, 0];
-  this.maleEthnicity = [0, 0, 0, 0];
+  this.femaleEthnicity = [26];
+  this.maleEthnicity = [26];
+  for (var i = 0 ; i < 26 ; i++) {
+    this.population = 0;
+    this.men = 0;
+    this.femaleEthnicity[i] = [0, 0, 0, 0];
+    this.maleEthnicity[i] = [0, 0, 0, 0];
+  }
+
 }
 
 /* =========================================== */
@@ -96,6 +109,11 @@ var nbMW = 4;
 //Top and bottom margins for men and women display
 var marginTop = 20;
 var marginBottom = 5;
+//Year chosen to display information
+var yearToDisplay = 0;
+//For data loading.
+var yearDone = 0;
+var previousYear = 1990;
 
 /* =========================================== */
 /* ================== FUNCTIONS ============== */
@@ -112,15 +130,22 @@ function loadData()
                 console.log("[ERROR] State not found: " + d["State"]);
                 return;
             }
+            var year = d["Year"];
+            if (year == -1) {
+              console.log("[ERROR] Year not found: " + d["State"]);
+              return;
+            }
+            if (year != previousYear)
+              yearDone++;
             if (d["Sex"] == 1) {//Male
               if (d["Race"] == 1) //White
-                statesPopulationData[stateIdx].maleEthnicity[1] += d["Population"];
+                statesPopulationData[stateIdx].maleEthnicity[yearDone][1] += d["Population"];
               else if (d["Race"] == 2) //Black
-                statesPopulationData[stateIdx].maleEthnicity[0] += d["Population"];
+                statesPopulationData[stateIdx].maleEthnicity[yearDone][0] += d["Population"];
               else if (d["Race"] == 3) //Native
-                statesPopulationData[stateIdx].maleEthnicity[2] += d["Population"];
+                statesPopulationData[stateIdx].maleEthnicity[yearDone][2] += d["Population"];
               else if (d["Race"] == 4) //Asian
-                statesPopulationData[stateIdx].maleEthnicity[3] += d["Population"];
+                statesPopulationData[stateIdx].maleEthnicity[yearDone][3] += d["Population"];
               else {
                 console.log("[WARNING] Race not found!");
                 return;
@@ -128,13 +153,13 @@ function loadData()
             }
             else if (d["Sex"] == 2) { //Female
               if (d["Race"] == 1) //White
-                statesPopulationData[stateIdx].femaleEthnicity[1] += d["Population"];
+                statesPopulationData[stateIdx].femaleEthnicity[yearDone][1] += d["Population"];
               else if (d["Race"] == 2) //Black
-                statesPopulationData[stateIdx].femaleEthnicity[0] += d["Population"];
+                statesPopulationData[stateIdx].femaleEthnicity[yearDone][0] += d["Population"];
               else if (d["Race"] == 3) //Native
-                statesPopulationData[stateIdx].femaleEthnicity[2] += d["Population"];
+                statesPopulationData[stateIdx].femaleEthnicity[yearDone][2] += d["Population"];
               else if (d["Race"] == 4) //Asian
-                statesPopulationData[stateIdx].femaleEthnicity[3] += d["Population"];
+                statesPopulationData[stateIdx].femaleEthnicity[yearDone][3] += d["Population"];
               else {
                 console.log("[WARNING] Race not found!");
                 return;
@@ -144,10 +169,11 @@ function loadData()
               console.log("[WARNING] Sex not found!");
               return;
             }
-            statesPopulationData[stateIdx].population += d["Population"];
-            if (d["Sex"] == 1) statesPopulationData[stateIdx].men += d["Population"];
+            statesPopulationData[stateIdx].population[yearDone] += d["Population"];
+            if (d["Sex"] == 1) statesPopulationData[stateIdx].men[yearDone] += d["Population"];
+            previousYear = year;
           });
-
+          yearDone = 0, previousYear = 1990;
           hdata.map(function(d) {
               // for each homicide
               var stateIdx = statesNames.indexOf(d["State"]);
@@ -155,44 +181,56 @@ function loadData()
                   console.log("[ERROR] State not found: " + d["State"]);
                   return;
               }
-              if(d["Victim Race"] == "Black") {
-                  if(d["Victim Sex"] == "Male")
-                    statesDeathData[stateIdx].maleEthnicity[0] += +d["Number Death"];
-                  else
-                    statesDeathData[stateIdx].femaleEthnicity[0] += +d["Number Death"];
-                }
-              else if(d["Victim Race"] == "White") {
-                  if(d["Victim Sex"] == "Male")
-                    statesDeathData[stateIdx].maleEthnicity[1] += +d["Number Death"];
-                  else
-                    statesDeathData[stateIdx].femaleEthnicity[1] += +d["Number Death"];
-                  }
-              else if(d["Victim Race"] == "Native American/Alaska Native") {
-                  if(d["Victim Sex"] == "Male")
-                    statesDeathData[stateIdx].maleEthnicity[2] += +d["Number Death"];
-                  else
-                    statesDeathData[stateIdx].femaleEthnicity[2] += +d["Number Death"];
-                  }
-              else if(d["Victim Race"] == "Asian/Pacific Islander") {
-                  if(d["Victim Sex"] == "Male")
-                    statesDeathData[stateIdx].maleEthnicity[3] += +d["Number Death"];
-                  else
-                    statesDeathData[stateIdx].femaleEthnicity[3] += +d["Number Death"];
-                  }
-              else {
-                  console.log("[WARNING] Ethnie not found: " + d["Victim Race"]);
+              //TODO : Update reduce/compute on homicides_small.csv to keep data where data >= 1990. Then remove condition.
+              if (d["Date"] >= 1990) {
+                var year = d["Date"];
+                if (year == -1) {
+                  console.log("[ERROR] Year not found: " + d["State"]);
                   return;
+                }
+                if (year != previousYear)
+                  yearDone++;
+                if(d["Victim Race"] == "Black") {
+                    if(d["Victim Sex"] == "Male")
+                      statesDeathData[stateIdx].maleEthnicity[yearDone][0] += +d["Number Death"];
+                    else
+                      statesDeathData[stateIdx].femaleEthnicity[yearDone][0] += +d["Number Death"];
+                  }
+                else if(d["Victim Race"] == "White") {
+                    if(d["Victim Sex"] == "Male")
+                      statesDeathData[stateIdx].maleEthnicity[yearDone][1] += +d["Number Death"];
+                    else
+                      statesDeathData[stateIdx].femaleEthnicity[yearDone][1] += +d["Number Death"];
+                    }
+                else if(d["Victim Race"] == "Native American/Alaska Native") {
+                    if(d["Victim Sex"] == "Male")
+                      statesDeathData[stateIdx].maleEthnicity[yearDone][2] += +d["Number Death"];
+                    else
+                      statesDeathData[stateIdx].femaleEthnicity[yearDone][2] += +d["Number Death"];
+                    }
+                else if(d["Victim Race"] == "Asian/Pacific Islander") {
+                    if(d["Victim Sex"] == "Male")
+                      statesDeathData[stateIdx].maleEthnicity[yearDone][3] += +d["Number Death"];
+                    else
+                      statesDeathData[stateIdx].femaleEthnicity[yearDone][3] += +d["Number Death"];
+                    }
+                else {
+                    console.log("[WARNING] Ethnie not found: " + d["Victim Race"]);
+                    return;
+                }
+                statesDeathData[stateIdx].death[yearDone] += +d["Number Death"];
+                if(d["Victim Sex"] == "Male") statesDeathData[stateIdx].men[yearDone] += +d["Number Death"];
+                previousYear = year;
               }
-              statesDeathData[stateIdx].death += +d["Number Death"];
-              if(d["Victim Sex"] == "Male") statesDeathData[stateIdx].men += +d["Number Death"];
           });
           //update min and max
-          minDeath = statesDeathData[0].death;
+          minDeath = statesDeathData[0].death[yearToDisplay];
           maxDeath = minDeath;
           for(var i = 1; i < statesNames.length; i++) {
-              if(statesDeathData[i].death < minDeath && statesDeathData[i].death != 0) minDeath = statesDeathData[i].death;
-              else if(statesDeathData[i].death > maxDeath) maxDeath = statesDeathData[i].death;
+              if(statesDeathData[i].death[yearToDisplay] < minDeath && statesDeathData[i].death[yearToDisplay] != 0) minDeath = statesDeathData[i].death[yearToDisplay];
+              else if(statesDeathData[i].death[yearToDisplay] > maxDeath) maxDeath = statesDeathData[i].death[yearToDisplay];
           }
+          console.log("Min: " + minDeath + " vs max: " + maxDeath);
           // load map
           d3.queue()
               .defer(d3.json, "https://d3js.org/us-10m.v1.json")
@@ -208,7 +246,7 @@ function c(x)
 
 function getColor(id)
 {
-    var cst = (c(statesDeathData[id].death) - c(minDeath)) / (c(maxDeath) - c(minDeath));
+    var cst = (c(statesDeathData[id].death[yearToDisplay]) - c(minDeath)) / (c(maxDeath) - c(minDeath));
     var res = "#";
     for(var i = 0; i < 3; i++) {
         var minColor = parseInt("0x" + MAP_MIN_COLOR.substr(2 * i, 2).toString(10));
