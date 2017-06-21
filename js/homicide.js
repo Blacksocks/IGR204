@@ -256,6 +256,7 @@ function dataReady(error, us)
             id = idlnk[parseInt(d.id)];
             displayName(id);
             menWomenColor(true);
+            displayDescription();
             currState = id;
         })
         .on("mouseleave", function(d){
@@ -294,6 +295,14 @@ function setStateNames()
         addText(paths[i], statesDeathData[i].name, i);
 }
 
+function displayDescription() {
+  $(".descriptionMW").css("display", "block");
+}
+
+function hideDescription() {
+  $(".descriptionMW").css("display", "none");
+}
+
 function displayPage()
 {
     $(".loading").css("display", "none");
@@ -313,6 +322,7 @@ function mouseLeavingStateHandler()
     if(mouseOveringState)
         return;
     menWomenColor(false);
+    hideDescription();
     currState = -1;
 }
 

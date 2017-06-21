@@ -79,6 +79,7 @@ body {
   font-weight: bold;
   position: absolute;
   opacity: 0.3;
+  display: none;
 }
 #map #legend {
   width: 36px;
