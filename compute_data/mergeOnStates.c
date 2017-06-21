@@ -87,6 +87,8 @@ int main()
        pop_11 = 0, pop_12 = 0, pop_21 = 0, pop_22 = 0, pop_31 = 0, pop_32 = 0, pop_41 = 0, pop_42 = 0;
        loop++;
      }
+     if (buff[0] == '2' && buff[1] == '0' && buff[2] == '1' && buff[3] == '5')
+      break;
      int population = 0;
      for (int i = 0 ; i < 8 ; i++) population += (buff[20-i] - '0') * pow(10,i);
 
