@@ -13,6 +13,8 @@ var WALLPAPER_EMPTY = "111111";
 var MAP_STROKE      = "222222";
 var MAP_MIN_COLOR   = "41BE41";
 var MAP_MAX_COLOR   = "BE4141";
+var MIN_DATE        = 1990;
+var MAX_DATE        = 2014;
 
 /* =========================================== */
 /* ============ CONVERSION DATA ============== */
@@ -73,10 +75,10 @@ function PopulationInState(name) {
 
 // map position and size
 var ratio = 1.67; // width on height country ratio
-var width = $(window).width() * 0.8;
+var width = $(window).width() * 0.75;
 var height = width / ratio;
 if($(window).width() / $(window).height() > ratio) {
-    height = $(window).height() * 0.8;
+    height = $(window).height() * 0.75;
     width = height * ratio;
 }
 $("#mapsvg").css("top", (($(window).height() - height) / 2) + "px");
@@ -110,13 +112,22 @@ var marginTop = 20;
 var marginBottom = 5;
 //Year chosen to display information
 var yearToDisplay = 0;
-//For data loading.
-var yearDone = 0;
-var previousYear = 1990;
+var scrolling = 0;
 
 /* =========================================== */
 /* ================== FUNCTIONS ============== */
 /* =========================================== */
+
+function getMinMaxDeath()
+{
+    minDeath = statesDeathData[0].death[yearToDisplay];
+    maxDeath = minDeath;
+    for(var i = 1; i < statesNames.length; i++) {
+        if(statesDeathData[i].death[yearToDisplay] < minDeath && statesDeathData[i].death[yearToDisplay] != 0) minDeath = statesDeathData[i].death[yearToDisplay];
+        else if(statesDeathData[i].death[yearToDisplay] > maxDeath) maxDeath = statesDeathData[i].death[yearToDisplay];
+    }
+    console.log("Min: " + minDeath + " vs max: " + maxDeath);
+}
 
 function loadData()
 {
@@ -129,22 +140,21 @@ function loadData()
                     console.log("[ERROR] State not found: " + d["State"]);
                     return;
                 }
-                var year = d["Year"];
+                var year = +d["Year"];
                 if (year == -1) {
                     console.log("[ERROR] Year not found: " + d["State"]);
                     return;
                 }
-                if (year != previousYear)
-                    yearDone++;
+                year -= MIN_DATE;
                 if (d["Sex"] == 1) {//Male
                     if (d["Race"] == 1) //White
-                        statesPopulationData[stateIdx].maleEthnicity[yearDone][1] += parseInt(d["Population"], 10);
+                        statesPopulationData[stateIdx].maleEthnicity[year][1] += parseInt(d["Population"], 10);
                     else if (d["Race"] == 2) //Black
-                        statesPopulationData[stateIdx].maleEthnicity[yearDone][0] += parseInt(d["Population"], 10);
+                        statesPopulationData[stateIdx].maleEthnicity[year][0] += parseInt(d["Population"], 10);
                     else if (d["Race"] == 3) //Native
-                        statesPopulationData[stateIdx].maleEthnicity[yearDone][2] += parseInt(d["Population"], 10);
+                        statesPopulationData[stateIdx].maleEthnicity[year][2] += parseInt(d["Population"], 10);
                     else if (d["Race"] == 4) //Asian
-                        statesPopulationData[stateIdx].maleEthnicity[yearDone][3] += parseInt(d["Population"], 10);
+                        statesPopulationData[stateIdx].maleEthnicity[year][3] += parseInt(d["Population"], 10);
                     else {
                         console.log("[WARNING] Race not found!");
                         return;
@@ -152,13 +162,13 @@ function loadData()
                 }
                 else if (d["Sex"] == 2) { //Female
                     if (d["Race"] == 1) //White
-                        statesPopulationData[stateIdx].femaleEthnicity[yearDone][1] += parseInt(d["Population"], 10);
+                        statesPopulationData[stateIdx].femaleEthnicity[year][1] += parseInt(d["Population"], 10);
                     else if (d["Race"] == 2) //Black
-                        statesPopulationData[stateIdx].femaleEthnicity[yearDone][0] += parseInt(d["Population"], 10);
+                        statesPopulationData[stateIdx].femaleEthnicity[year][0] += parseInt(d["Population"], 10);
                     else if (d["Race"] == 3) //Native
-                        statesPopulationData[stateIdx].femaleEthnicity[yearDone][2] += parseInt(d["Population"], 10);
+                        statesPopulationData[stateIdx].femaleEthnicity[year][2] += parseInt(d["Population"], 10);
                     else if (d["Race"] == 4) //Asian
-                        statesPopulationData[stateIdx].femaleEthnicity[yearDone][3] += parseInt(d["Population"], 10);
+                        statesPopulationData[stateIdx].femaleEthnicity[year][3] += parseInt(d["Population"], 10);
                     else {
                         console.log("[WARNING] Race not found!");
                         return;
@@ -168,11 +178,9 @@ function loadData()
                     console.log("[WARNING] Sex not found!");
                     return;
                 }
-                statesPopulationData[stateIdx].population[yearDone] += parseInt(d["Population"], 10);
-                if (d["Sex"] == 1) statesPopulationData[stateIdx].men[yearDone] += parseInt(d["Population"], 10);
-                previousYear = year;
+                statesPopulationData[stateIdx].population[year] += parseInt(d["Population"], 10);
+                if (d["Sex"] == 1) statesPopulationData[stateIdx].men[year] += parseInt(d["Population"], 10);
             });
-            yearDone = 0, previousYear = 1990;
             hdata.map(function(d) {
                 // for each homicide
                 var stateIdx = statesNames.indexOf(d["State"]);
@@ -180,13 +188,12 @@ function loadData()
                     console.log("[ERROR] State not found: " + d["State"]);
                     return;
                 }
-                var year = d["Date"];
+                var year = +d["Date"];
                 if (year == -1) {
                     console.log("[ERROR] Year not found: " + d["State"]);
                     return;
                 }
-                if (year != previousYear)
-                    yearDone++;
+                year -= MIN_DATE
                 var raceIdx = 0;
                 if(d["Race"] == "White") raceIdx = 1;
                 else if(d["Race"] == "Native American/Alaska Native") raceIdx = 2;
@@ -195,20 +202,13 @@ function loadData()
                     console.log("[WARNING] Ethnie not found: " + d["Victim Race"]);
                     return;
                 }
-                statesDeathData[stateIdx].maleEthnicity[yearDone][raceIdx] += +d["Men"];
-                statesDeathData[stateIdx].femaleEthnicity[yearDone][raceIdx] += +d["Women"];
-                statesDeathData[stateIdx].death[yearDone] += +d["Men"] + +d["Women"];
-                statesDeathData[stateIdx].men[yearDone] += +d["Men"];
-                previousYear = year;
+                statesDeathData[stateIdx].maleEthnicity[year][raceIdx] += +d["Men"];
+                statesDeathData[stateIdx].femaleEthnicity[year][raceIdx] += +d["Women"];
+                statesDeathData[stateIdx].death[year] += +d["Men"] + +d["Women"];
+                statesDeathData[stateIdx].men[year] += +d["Men"];
             });
             //update min and max
-            minDeath = statesDeathData[0].death[yearToDisplay];
-            maxDeath = minDeath;
-            for(var i = 1; i < statesNames.length; i++) {
-                if(statesDeathData[i].death[yearToDisplay] < minDeath && statesDeathData[i].death[yearToDisplay] != 0) minDeath = statesDeathData[i].death[yearToDisplay];
-                else if(statesDeathData[i].death[yearToDisplay] > maxDeath) maxDeath = statesDeathData[i].death[yearToDisplay];
-            }
-            console.log("Min: " + minDeath + " vs max: " + maxDeath);
+            getMinMaxDeath();
             // load map
             d3.queue()
                 .defer(d3.json, "https://d3js.org/us-10m.v1.json")
@@ -266,7 +266,6 @@ function dataReady(error, us)
         .attr("transform", "scale(" + width / 1000 + ")")
         // on mouse event
         .on("mouseover", function(d){
-            console.log("[INFO] Map mouseover");
             mouseOveringState++;
             setTimeout(mouseOveringStateHandler, 20);
             id = idlnk[parseInt(d.id)];
@@ -276,7 +275,6 @@ function dataReady(error, us)
             currState = id;
         })
         .on("mouseleave", function(d){
-            console.log("[INFO] Map mouseleave");
             setTimeout(mouseLeavingStateHandler, 10);
             hideName(idlnk[parseInt(d.id)]);
         })
@@ -431,9 +429,63 @@ function setLegend()
     $("#leg_color_6").css("background", "#" + WALLPAPER_ASIAN);
 }
 
+function updateTimeline()
+{
+    var maxPx = $("#timeline").width();
+    var pointer = maxPx * yearToDisplay / (MAX_DATE - MIN_DATE);
+    var time = 400;
+    $(".timeline-content").stop().animate({
+        "background-position-x": pointer + "px"
+    }, time);
+    var textPos = (pointer + 8) + "px";
+    if(pointer > maxPx - 54)
+        textPos = (maxPx - 46) + "px";
+    $("#date-timeline").stop().animate({
+        "left": textPos
+    }, time);
+    $("#date-timeline").text(yearToDisplay + MIN_DATE);
+}
+
+function onTimeline(e)
+{
+    var maxPx = $("#timeline").width();
+    var date = Math.round(e.pageX*(MAX_DATE - MIN_DATE) / maxPx + MIN_DATE);
+    yearToDisplay = date - MIN_DATE;
+    updateTimeline();
+}
+
+// Mouse wheel scrolling event
+$(window).bind('mousewheel DOMMouseScroll', function(event){
+    var scrollingLimit = 2;
+    if (event.originalEvent.wheelDelta > 0 || event.originalEvent.detail < 0)
+        scrolling--;
+    else
+        scrolling++;
+    if(scrolling > scrollingLimit) {
+        scrolling = 0;
+        yearToDisplay++;
+        if(yearToDisplay > MAX_DATE - MIN_DATE)
+            yearToDisplay = MAX_DATE - MIN_DATE;
+        else
+            updateTimeline();
+    }
+    else if (scrolling < -scrollingLimit) {
+        scrolling = 0;
+        yearToDisplay--;
+        if(yearToDisplay < 0)
+            yearToDisplay = 0;
+        else
+            updateTimeline();
+    }
+});
+
 /* =========================================== */
 /* =============== CONCRETE CODE ============= */
 /* =========================================== */
 
 setLegend();
 loadData();
+
+$(document).ready(function(){
+	$("#timeline").click(function(e) {onTimeline(e);});
+});
