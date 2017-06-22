@@ -38,12 +38,12 @@ var months = ["January", "January", "February", "March", "April", "May",
 function DeathInState(name) {
     this.name = name;
     this.id = 0;
-    this.death = [26];  // number of death (men + women)
-    this.men = [26];    // number of death (men)
+    this.death = [25];  // number of death (men + women)
+    this.men = [25];    // number of death (men)
     // Black, White, Native American, Asian
-    this.femaleEthnicity = [26];
-    this.maleEthnicity = [26];
-    for (var i = 0 ; i < 26 ; i++) {
+    this.femaleEthnicity = [25];
+    this.maleEthnicity = [25];
+    for (var i = 0 ; i < 25 ; i++) {
       this.death[i] = 0;
       this.men[i] = 0;
       this.femaleEthnicity[i] = [0, 0, 0, 0];
@@ -55,12 +55,12 @@ function DeathInState(name) {
 function PopulationInState(name) {
   this.name = name;
   this.id = 0;
-  this.population = [26]; //Whole population
-  this.men = [26]; //Number of men in population
+  this.population = [25]; //Whole population
+  this.men = [25]; //Number of men in population
   //Black, White, Native, Asian
-  this.femaleEthnicity = [26];
-  this.maleEthnicity = [26];
-  for (var i = 0 ; i < 26 ; i++) {
+  this.femaleEthnicity = [25];
+  this.maleEthnicity = [25];
+  for (var i = 0 ; i < 25 ; i++) {
     this.population[i] = 0;
     this.men[i] = 0;
     this.femaleEthnicity[i] = [0, 0, 0, 0];
@@ -444,6 +444,11 @@ function updateTimeline()
         "left": textPos
     }, time);
     $("#date-timeline").text(yearToDisplay + MIN_DATE);
+    getMinMaxDeath();
+    // reset color
+    for(var i = 0; i < idlnk_.length; i++)
+        statesDeathData[i].color = getColor(i);
+    showAllStates();
 }
 
 function onTimeline(e)
