@@ -81,6 +81,12 @@ body {
   opacity: 0.3;
   display: none;
 }
+#map .wallpaper .dataMW {
+  color: #EEE;
+  font-weight: bold;
+  position: absolute;
+  opacity: 0.3;
+}
 #map #legend {
   width: 36px;
   height: 100%;

@@ -109,7 +109,7 @@ var currState = -1;
 var nbMW = 4;
 //Top and bottom margins for men and women display
 var marginTop = 20;
-var marginBottom = 5;
+var marginBottom = 30;
 //Year chosen to display information
 var yearToDisplay = 0;
 var scrolling = 0;
@@ -126,7 +126,6 @@ function getMinMaxDeath()
         if(statesDeathData[i].death[yearToDisplay] < minDeath && statesDeathData[i].death[yearToDisplay] != 0) minDeath = statesDeathData[i].death[yearToDisplay];
         else if(statesDeathData[i].death[yearToDisplay] > maxDeath) maxDeath = statesDeathData[i].death[yearToDisplay];
     }
-    console.log("Min: " + minDeath + " vs max: " + maxDeath);
 }
 
 function loadData()
@@ -272,6 +271,7 @@ function dataReady(error, us)
             displayName(id);
             menWomenColor(true);
             displayDescription();
+            displayDataMW(id);
             currState = id;
         })
         .on("mouseleave", function(d){
@@ -303,8 +303,9 @@ function setStateNames()
     paths = [].slice.call(paths).sort(function(a,b){
         return a.id.substr(5, 2) - b.id.substr(5, 2);
     });
-    for (var i = 0; i < idlnk_.length; i++)
+    for (var i = 0; i < idlnk_.length; i++) {
         addText(paths[i], statesDeathData[i].name, i);
+      }
 }
 
 function displayDescription() {
@@ -340,7 +341,7 @@ function mouseLeavingStateHandler()
 
 function setWallpaper()
 {
-    var w = screen.width/20;
+    var w = screen.width/22;
     var h = 2 * w;
     var data1 = "";
     $(".wallpaper").load('img/man.svg', function(data, text, jq){
@@ -355,7 +356,7 @@ function setWallpaper()
             var i = 0;
             var left = [nbMW];
             for(; i < nbMW; i++) {
-                left[i] = i*(w+6);
+                left[i] = i*(w+40);
                 $(".wallpaper").append(t1 + i + t2 + left[i] + t3);
               }
             svgImg = parser.parseFromString(data2, "image/svg+xml").documentElement;
@@ -366,7 +367,7 @@ function setWallpaper()
             var border = 60;
             var right = [nbMW];
             for(; i < nbMW; i++) {
-                right[i] = border + i*(w+20);
+                right[i] = border + i*(w+40);
                 $(".wallpaper").append(t1 + i + t2 + right[i] + t3);
             }
             addDescriptionMW(left, right);
@@ -388,7 +389,7 @@ function colorWallpaper(e)
 
 function menWomenColor(color)
 {
-    // set person color
+    // set person color and display information such as death, and population.
     if (color) {
       for(var i = 0; i < nbMW; i++) {
           $("#mp" + i).find("path").attr("style", "fill:#" + colorWallpaper(i));
@@ -399,8 +400,24 @@ function menWomenColor(color)
       for(var i = 0; i < nbMW; i++) {
           $("#mp" + i).find("path").attr("style", "fill:#" + WALLPAPER_EMPTY);
           $("#wp" + (nbMW-1-i)).find("path").attr("style", "fill:#" + WALLPAPER_EMPTY);
+          $("#dataM" + i).text("");
+          $("#dataW" + (nbMW-1-i)).text("");
       }
     }
+}
+
+function displayDataMW(id)
+{
+  for (var i = 0 ; i < nbMW ; i++) {
+  msg = statesDeathData[id].maleEthnicity[yearToDisplay][i];
+  msg += "<br/>";
+  msg += statesPopulationData[id].maleEthnicity[yearToDisplay][i]
+  $("#dataM" + i).html(msg);
+  msg = statesDeathData[id].femaleEthnicity[yearToDisplay][i];
+  msg += "<br>";
+  msg += statesPopulationData[id].femaleEthnicity[yearToDisplay][i]
+  $("#dataW" + i).html(msg);
+  }
 }
 
 function addText(p, name, i)
@@ -416,6 +433,8 @@ function addDescriptionMW(left, right) {
   for (var i = 0 ; i < nbMW ; i++) {
   $(".wallpaper").append("<div class=\"descriptionMW noselect\" id=\"description" + 2*i + "\" style=\"top:" + (marginTop-20) + "px;left:" + (left[i]+13) + "px\">" + name[i] + "</div>");
   $(".wallpaper").append("<div class=\"descriptionMW noselect\" id=\"description" + (2*i+1) + "\" style=\"bottom:" + (marginBottom+ $("#wp1").height()) + "px;right:" + (right[nbMW - 1 - i]+11)+ "px\">" + name[i] + "</div>");
+  $(".wallpaper").append("<div class=\"dataMW noselect\" id=\"dataM" + i + "\" style=\"top:" + (marginTop+$("#wp1").height()) + "px;left:" + (left[i]+13) + "px\"> </div>");
+  $(".wallpaper").append("<div class=\"dataMW noselect\" id=\"dataW" + i + "\" style=\"bottom:" + (marginBottom-30) + "px;right:" + (right[nbMW - 1 - i]+11)+ "px\"> </div>");
   }
 }
 
@@ -449,6 +468,8 @@ function updateTimeline()
     for(var i = 0; i < idlnk_.length; i++)
         statesDeathData[i].color = getColor(i);
     showAllStates();
+    if (currState != -1)
+      displayDataMW(currState);
 }
 
 function onTimeline(e)

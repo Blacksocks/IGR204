@@ -71,10 +71,9 @@ int main()
      int n0 = (buff[7] - '0');
      int n1 = 10*(buff[6] - '0');
      current_state = n0 + n1 ;
-     if (current_state == 1) loop = 1;
      int race = buff[11] - '0';
      int sex = buff[12] - '0';
-     if (current_state - previous_state > 0)  //Another state.
+     if (current_state - previous_state > 0 || current_state - previous_state == -55)  //Another state.
      {
        writeToFile(wr, 1, 1, pop_11, previous_buff, loop%10, loop/10);
        writeToFile(wr, 1, 2, pop_12, previous_buff, loop%10, loop/10);
@@ -87,6 +86,7 @@ int main()
        pop_11 = 0, pop_12 = 0, pop_21 = 0, pop_22 = 0, pop_31 = 0, pop_32 = 0, pop_41 = 0, pop_42 = 0;
        loop++;
      }
+     if (current_state == 1) loop = 1;
      if (buff[0] == '2' && buff[1] == '0' && buff[2] == '1' && buff[3] == '5')
       break;
      int population = 0;
