@@ -393,13 +393,13 @@ function menWomenColor(color)
     // set person color and display information such as death, and population.
     if (color) {
       for(var i = 0; i < nbMW; i++) {
-          $("#mp" + i).find("path").attr("style", "fill:#" + colorWallpaper(i));
+          $("#mp" + (nbMW-1-i)).find("path").attr("style", "fill:#" + colorWallpaper(i));
           $("#wp" + (nbMW-1-i)).find("path").attr("style", "fill:#" + colorWallpaper(i));
       }
     }
     else {
       for(var i = 0; i < nbMW; i++) {
-          $("#mp" + i).find("path").attr("style", "fill:#" + WALLPAPER_EMPTY);
+          $("#mp" + (nbMW-1-i)).find("path").attr("style", "fill:#" + WALLPAPER_EMPTY);
           $("#wp" + (nbMW-1-i)).find("path").attr("style", "fill:#" + WALLPAPER_EMPTY);
           $("#dataM" + i).text("");
           $("#dataW" + (nbMW-1-i)).text("");
@@ -432,9 +432,9 @@ function addText(p, name, i)
 function addDescriptionMW(right) {
   var name = ["Black", "White", "Native", "Asian"];
   for (var i = 0 ; i < nbMW ; i++) {
-  $(".wallpaper").append("<div class=\"descriptionMW noselect\" id=\"description" + 2*i + "\" style=\"top:" + (marginTop-20) + "px;right:" + (right[i]+13) + "px\">" + name[i] + "</div>");
+  $(".wallpaper").append("<div class=\"descriptionMW noselect\" id=\"description" + 2*i + "\" style=\"top:" + (marginTop-20) + "px;right:" + (right[nbMW - 1 - i]+13) + "px\">" + name[i] + "</div>");
   $(".wallpaper").append("<div class=\"descriptionMW noselect\" id=\"description" + (2*i+1) + "\" style=\"bottom:" + (marginBottom+ $("#wp1").height()) + "px;right:" + (right[nbMW - 1 - i]+11)+ "px\">" + name[i] + "</div>");
-  $(".wallpaper").append("<div class=\"dataMW noselect\" id=\"dataM" + i + "\" style=\"top:" + (marginTop+$("#wp1").height()) + "px;right:" + (right[i]+13) + "px\"> </div>");
+  $(".wallpaper").append("<div class=\"dataMW noselect\" id=\"dataM" + i + "\" style=\"top:" + (marginTop+$("#wp1").height()) + "px;right:" + (right[nbMW - 1 - i]+13) + "px\"> </div>");
   $(".wallpaper").append("<div class=\"dataMW noselect\" id=\"dataW" + i + "\" style=\"bottom:" + (marginBottom-30) + "px;right:" + (right[nbMW - 1 - i]+11)+ "px\"> </div>");
   }
 }
