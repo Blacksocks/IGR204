@@ -1,15 +1,18 @@
 /* Copyright 2013 Google Inc. All Rights Reserved.
 ** Licensed under the Apache License, Version 2.0
 */
+body {
+  background: #222;
+}
 #sunburst {
-    display: none;
     position: absolute;
     top: 0;
     left: 0;
     font-family: 'Lato', sans-serif;
     font-size: 12px;
     font-weight: 400;
-    width: 100%;
+    z-index: 1;
+    width: calc(100% - 36px);
     height: 100%;
 }
 #sunburst #sequence {
@@ -39,4 +42,77 @@
 }
 #sunburst #percentage {
     font-size: 2.5em;
+}
+#legend {
+  width: 36px;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 3;
+  background: #222;
+  border-left: 1px solid #BBBBBB;
+  box-shadow: 0 0 10px #000;
+  overflow: hidden;
+  transition-duration: 300ms;
+}
+#legend:hover {
+  width: 260px;
+}
+#legend .title {
+  display: none;
+  height: 19px;
+  font-size: 14px;
+  padding: 4px;
+  margin-top: 4px;
+  color: #222;
+  border-top: 1px solid #111;
+  border-bottom: 1px solid #111;
+  background: #BBBBBB;
+  text-align: left;
+}
+#legend .nomargintop {
+  margin-top: 0;
+  border-top: none;
+}
+#legend:hover .title {
+  display: block;
+}
+#legend .small {
+  color: #BBBBBB;
+  font-size: 12px;
+  line-height: 26px;
+  vertical-align: middle;
+  padding-right: 6px;
+  display: none;
+  overflow: hidden;
+  white-space: nowrap;
+}
+#legend:hover .small {
+  display: inline-block;
+}
+#legend .text {
+  text-transform: uppercase;
+  font-family: Lato;
+}
+#legend .color {
+  width: 26px;
+  height: 26px;
+  border: 1px solid #FFF;
+  border-radius: 2px;
+  margin: 4px 4px 0 4px;
+  display: inline-block;
+  vertical-align: middle;
+  box-shadow: 0 0 2px #222;
+}
+#legend table {
+  border-spacing: 0;
+  margin: 0;
+  padding: 0;
+  text-align: right;
+  width: 100%;
+}
+#legend table td {
+  padding: 0;
+  margin: 0;
 }

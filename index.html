@@ -4,12 +4,17 @@
     <meta charset="utf-8">
         <title>Homicide report</title>
         <link rel="stylesheet" type="text/css" href="css/map.css">
-        <link rel="stylesheet" type="text/css" href="css/sunburst.css"/>
         <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
     </head>
     <body>
         <!-- MAP -->
         <div id="map">
+            <div class="maintitle">
+                <center><table cellspacing="0" cellpadding="0"><tr><td rowspan="2">Visualization of homicides in the US</td>
+                    <td class="small" style="padding-top:5px;">Vincent Gaillard &middot; Vincent Bisogno</td></tr>
+                    <tr><td class="small" style="padding-bottom:5px;">Roman Fenioux &middot; Ronan Desplanques</td></tr></table>
+                </center>
+            </div>
             <svg id="mapsvg"></svg>
             <center><div class="loading">
                 Data loading ...<br />
@@ -29,21 +34,15 @@
                 </table>
             </div>
         </div>
-        <!-- SUNBURST -->
-        <div id="sunburst">
-            <div id="sequence"></div>
-            <div id="chart">
-                <div id="explanation" style="visibility: hidden;">
-                    <span id="percentage"></span><br/>
-                    of visits begin with this sequence of pages
-                </div>
-            </div>
-        </div>
+        <div id="timeline"><center>
+    		<div class="timeline-content" id="timeline-content">
+    			<div id="date-timeline">1990</div>
+    		</div>
+        </center></div>
         <!-- JS -->
         <script type="text/javascript" src="js/jQuery-3.2.1.min.js"></script>
         <script type="text/javascript" src="js/d3.min.js"></script>
         <script type="text/javascript" src="js/topojson.min.js"></script>
         <script type="text/javascript" src="js/homicide.js"></script>
-        <script type="text/javascript" src="js/sunburst.js"></script>
     </body>
 </html>
