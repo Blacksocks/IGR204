@@ -82,7 +82,7 @@ if($(window).width() / $(window).height() > ratio) {
     width = height * ratio;
 }
 $("#mapsvg").css("top", (($(window).height() - height) / 2) + "px");
-$("#mapsvg").css("left", (($(window).width() - width) / 2) + "px");
+$("#mapsvg").css("left", (($(window).width() - width) / 10) + "px");
 var svg = d3.select('svg')
     .style("width", width + 'px')
     .style("height", height + 'px');
@@ -351,26 +351,27 @@ function setWallpaper()
             var parser = new DOMParser();
             var svgImg = parser.parseFromString(data1, "image/svg+xml").documentElement;
             var t1 = "<svg class=\"man\" id=\"mp";
-            var t2 = "\" viewBox=\"0 0 249 497\" style=\"top: "+marginTop+"px;left:";
-            var t3 = "px\" width=\""+w+"\" height=\""+h+"\">" + $(svgImg).html() + "</svg>";
+            var t2 = "\" viewBox=\"0 0 249 497\" style=\"top: ";
+            var t3 = "px;right:";
+            var t4 = "px\" width=\""+w+"\" height=\""+h+"\">" + $(svgImg).html() + "</svg>";
             var i = 0;
-            var left = [nbMW];
+            var right = [nbMW];
+            var border = 60;
             for(; i < nbMW; i++) {
-                left[i] = i*(w+40);
-                $(".wallpaper").append(t1 + i + t2 + left[i] + t3);
+                right[i] = border + i*(w+40);
+                $(".wallpaper").append(t1 + i + t2 + marginTop + t3 + right[i] + t4);
               }
             svgImg = parser.parseFromString(data2, "image/svg+xml").documentElement;
             t1 = "<svg class=\"woman\" id=\"wp";
-            t2 = "\" viewBox=\"0 0 249 497\" style=\"bottom: "+marginBottom+"px; right:";
-            t3 = "px\" width=\""+w+"\" height=\""+h+"\">" + $(svgImg).html() + "</svg>";
+            t2 = "\" viewBox=\"0 0 249 497\" style=\"bottom: ";
+            t3 = "px; right:";
+            t4 = "px\" width=\""+w+"\" height=\""+h+"\">" + $(svgImg).html() + "</svg>";
             i = 0;
-            var border = 60;
-            var right = [nbMW];
             for(; i < nbMW; i++) {
                 right[i] = border + i*(w+40);
-                $(".wallpaper").append(t1 + i + t2 + right[i] + t3);
+                $(".wallpaper").append(t1 + i + t2 + (marginBottom) + t3 + right[i] + t4);
             }
-            addDescriptionMW(left, right);
+            addDescriptionMW(right);
             displayPage();
         });
     });
@@ -428,12 +429,12 @@ function addText(p, name, i)
     $("#map").append("<div class=\"stateName noselect\" id=\"stateName" + i + "\" style=\"top:" + top + "px;left:" + left + "px\">" + name + "</div>");
 }
 
-function addDescriptionMW(left, right) {
+function addDescriptionMW(right) {
   var name = ["Black", "White", "Native", "Asian"];
   for (var i = 0 ; i < nbMW ; i++) {
-  $(".wallpaper").append("<div class=\"descriptionMW noselect\" id=\"description" + 2*i + "\" style=\"top:" + (marginTop-20) + "px;left:" + (left[i]+13) + "px\">" + name[i] + "</div>");
+  $(".wallpaper").append("<div class=\"descriptionMW noselect\" id=\"description" + 2*i + "\" style=\"top:" + (marginTop-20) + "px;right:" + (right[i]+13) + "px\">" + name[i] + "</div>");
   $(".wallpaper").append("<div class=\"descriptionMW noselect\" id=\"description" + (2*i+1) + "\" style=\"bottom:" + (marginBottom+ $("#wp1").height()) + "px;right:" + (right[nbMW - 1 - i]+11)+ "px\">" + name[i] + "</div>");
-  $(".wallpaper").append("<div class=\"dataMW noselect\" id=\"dataM" + i + "\" style=\"top:" + (marginTop+$("#wp1").height()) + "px;left:" + (left[i]+13) + "px\"> </div>");
+  $(".wallpaper").append("<div class=\"dataMW noselect\" id=\"dataM" + i + "\" style=\"top:" + (marginTop+$("#wp1").height()) + "px;right:" + (right[i]+13) + "px\"> </div>");
   $(".wallpaper").append("<div class=\"dataMW noselect\" id=\"dataW" + i + "\" style=\"bottom:" + (marginBottom-30) + "px;right:" + (right[nbMW - 1 - i]+11)+ "px\"> </div>");
   }
 }
