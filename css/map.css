@@ -71,18 +71,11 @@ body {
     top: 60px;
     left: 0;
 }
-#map .wallpaper .woman, #map .wallpaper .man {
-    position: absolute;
-}
-#map .descriptionMW, .dataMW {
+#map .personBox {
     font-family: Lato;
-    color: #AAA;
-    font-weight: bold;
-    position: absolute;
     text-align: center;
-}
-#map .descriptionMW {
-    display: none;
+    position: absolute;
+    color: #111;
 }
 #map #legend {
     width: 36px;

@@ -109,7 +109,7 @@ var currState = -1;
 var nbMW = 4;
 //Top and bottom margins for men and women display
 var marginTop = 40;
-var marginBottom = 60;
+var marginBottom = 20;
 //Year chosen to display information
 var yearToDisplay = 0;
 var scrolling = 0;
@@ -350,26 +350,25 @@ function setWallpaper()
             $(".wallpaper").html("");
             var parser = new DOMParser();
             var svgImg = parser.parseFromString(data1, "image/svg+xml").documentElement;
-            var t1 = "<svg class=\"man\" id=\"mp";
-            var t2 = "\" viewBox=\"0 0 249 497\" style=\"top: ";
-            var t3 = "px;right:";
-            var t4 = "px\" width=\""+w+"\" height=\""+h+"\">" + $(svgImg).html() + "</svg>";
+            var t1 = "<div class=\"personBox\" style=\"top:" + marginTop + "px;right:";
+            var t2 = "px\" id=\"mp";
+            var t3 = "\"><svg class=\"man\" viewBox=\"0 0 249 497\" style=\"margin:4px 10px 0 10px\" width=\""+w+"\" height=\""+h+"\">" + $(svgImg).html() + "</svg></div>";
             var i = 0;
             var right = [nbMW];
             var border = 60;
             for(; i < nbMW; i++) {
                 right[i] = border + i*(w+40);
-                $(".wallpaper").append(t1 + i + t2 + marginTop + t3 + right[i] + t4);
+                $(".wallpaper").append(t1 + right[i] + t2 + i + t3);
               }
             svgImg = parser.parseFromString(data2, "image/svg+xml").documentElement;
-            t1 = "<svg class=\"woman\" id=\"wp";
-            t2 = "\" viewBox=\"0 0 249 497\" style=\"bottom: ";
-            t3 = "px; right:";
-            t4 = "px\" width=\""+w+"\" height=\""+h+"\">" + $(svgImg).html() + "</svg>";
+            var margin = $(".wallpaper").height() - marginBottom - h - 70;
+            t1 = "<div class=\"personBox\" style=\"top:" + margin + "px;right:";
+            t2 = "px\" id=\"wp";
+            t3 = "\"><svg class=\"woman\"\" viewBox=\"0 0 249 497\" style=\"margin:4px 10px 0 10px\" width=\""+w+"\" height=\""+h+"\">" + $(svgImg).html() + "</svg></div>";
             i = 0;
             for(; i < nbMW; i++) {
                 right[i] = border + i*(w+40);
-                $(".wallpaper").append(t1 + i + t2 + (marginBottom) + t3 + right[i] + t4);
+                $(".wallpaper").append(t1 + right[i] + t2 + i + t3);
             }
             addDescriptionMW(right);
             displayPage();
@@ -409,16 +408,16 @@ function menWomenColor(color)
 
 function displayDataMW(id)
 {
-  for (var i = 0 ; i < nbMW ; i++) {
-  msg = statesDeathData[id].maleEthnicity[yearToDisplay][i];
-  msg += "<br/>";
-  msg += statesPopulationData[id].maleEthnicity[yearToDisplay][i]
-  $("#dataM" + i).html(msg);
-  msg = statesDeathData[id].femaleEthnicity[yearToDisplay][i];
-  msg += "<br>";
-  msg += statesPopulationData[id].femaleEthnicity[yearToDisplay][i]
-  $("#dataW" + i).html(msg);
-  }
+    for (var i = 0 ; i < nbMW ; i++) {
+        msg = statesDeathData[id].maleEthnicity[yearToDisplay][i];
+        msg += "<br/>";
+        msg += statesPopulationData[id].maleEthnicity[yearToDisplay][i]
+        $("#dataM" + i).html(msg).css("color", "#EEE");
+        msg = statesDeathData[id].femaleEthnicity[yearToDisplay][i];
+        msg += "<br>";
+        msg += statesPopulationData[id].femaleEthnicity[yearToDisplay][i]
+        $("#dataW" + i).html(msg).css("color", "#EEE");
+    }
 }
 
 function addText(p, name, i)
@@ -430,13 +429,13 @@ function addText(p, name, i)
 }
 
 function addDescriptionMW(right) {
-  var name = ["Black", "White", "Native", "Asian"];
-  for (var i = 0 ; i < nbMW ; i++) {
-  $(".wallpaper").append("<div class=\"descriptionMW noselect\" id=\"description" + 2*i + "\" style=\"top:" + (marginTop-22) + "px;right:" + (right[nbMW - 1 - i]+13) + "px\">" + name[i] + "</div>");
-  $(".wallpaper").append("<div class=\"descriptionMW noselect\" id=\"description" + (2*i+1) + "\" style=\"bottom:" + (marginBottom+ $("#wp1").height()) + "px;right:" + (right[nbMW - 1 - i]+11)+ "px\">" + name[i] + "</div>");
-  $(".wallpaper").append("<div class=\"dataMW noselect\" id=\"dataM" + i + "\" style=\"top:" + (marginTop+$("#wp1").height() + 2) + "px;right:" + (right[nbMW - 1 - i]+13) + "px\"> </div>");
-  $(".wallpaper").append("<div class=\"dataMW noselect\" id=\"dataW" + i + "\" style=\"bottom:" + (marginBottom-40) + "px;right:" + (right[nbMW - 1 - i]+11)+ "px\"> </div>");
-  }
+    var name = ["Black", "White", "Native", "Asian"];
+    for (var i = 0; i < nbMW; i++) {
+        $("#mp" + i).prepend("<b>" + name[i] + "</b><br />");
+        $("#wp" + i).prepend("<b>" + name[i] + "</b><br />");
+        $("#mp" + i).append("<div id=\"dataM" + i + "\"></div>");
+        $("#wp" + i).append("<div id=\"dataW" + i + "\"></div>");
+    }
 }
 
 function setLegend()
