@@ -46,6 +46,9 @@ body {
     stroke: #fff;
     stroke-linejoin: round;
 }
+#map .state {
+    cursor: pointer;
+}
 #map .stateName {
     font-size: 14px;
     height: 18px;
@@ -76,6 +79,12 @@ body {
     text-align: center;
     position: absolute;
     color: #111;
+}
+#map .colorDeath {
+    color: #BE4141;
+}
+#map .colorPop {
+    color: #3399CC;
 }
 #map #legend {
     width: 36px;

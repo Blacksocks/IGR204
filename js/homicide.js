@@ -248,6 +248,7 @@ function displayName(id)
 function hideName(id)
 {
     $("#stateName" + id).css("display", "none");
+    $(".personBox").each(function(){$(this).css("color", "#111");});
 }
 
 function dataReady(error, us)
@@ -260,6 +261,7 @@ function dataReady(error, us)
         // for each state
         .enter().append("path")
         .attr("id", function(d) {idlnk_.push(parseInt(d.id));return "state" + parseInt(d.id);})
+        .attr("class", "state")
         .attr("d", path)
         .attr("stroke", function(d) {return "#" + MAP_STROKE;})
         .attr("transform", "scale(" + width / 1000 + ")")
@@ -294,7 +296,6 @@ function dataReady(error, us)
     showAllStates();
     setWallpaper();
     setStateNames();
-
 }
 
 function setStateNames()
@@ -353,24 +354,18 @@ function setWallpaper()
             var t1 = "<div class=\"personBox\" style=\"top:" + marginTop + "px;right:";
             var t2 = "px\" id=\"mp";
             var t3 = "\"><svg class=\"man\" viewBox=\"0 0 249 497\" style=\"margin:4px 10px 0 10px\" width=\""+w+"\" height=\""+h+"\">" + $(svgImg).html() + "</svg></div>";
-            var i = 0;
             var right = [nbMW];
             var border = 60;
-            for(; i < nbMW; i++) {
-                right[i] = border + i*(w+40);
-                $(".wallpaper").append(t1 + right[i] + t2 + i + t3);
-              }
+            for(var i = 0; i < nbMW; i++)
+                $(".wallpaper").append(t1 + (border + i*(w+40)) + t2 + (nbMW - 1 - i) + t3);
             svgImg = parser.parseFromString(data2, "image/svg+xml").documentElement;
             var margin = $(".wallpaper").height() - marginBottom - h - 70;
             t1 = "<div class=\"personBox\" style=\"top:" + margin + "px;right:";
             t2 = "px\" id=\"wp";
             t3 = "\"><svg class=\"woman\"\" viewBox=\"0 0 249 497\" style=\"margin:4px 10px 0 10px\" width=\""+w+"\" height=\""+h+"\">" + $(svgImg).html() + "</svg></div>";
-            i = 0;
-            for(; i < nbMW; i++) {
-                right[i] = border + i*(w+40);
-                $(".wallpaper").append(t1 + right[i] + t2 + i + t3);
-            }
-            addDescriptionMW(right);
+            for(var i = 0; i < nbMW; i++)
+                $(".wallpaper").append(t1 + (border + i*(w+40)) + t2 + (nbMW - 1 - i) + t3);
+            addDescriptionMW();
             displayPage();
         });
     });
@@ -392,8 +387,8 @@ function menWomenColor(color)
     // set person color and display information such as death, and population.
     if (color) {
       for(var i = 0; i < nbMW; i++) {
-          $("#mp" + (nbMW-1-i)).find("path").attr("style", "fill:#" + colorWallpaper(i));
-          $("#wp" + (nbMW-1-i)).find("path").attr("style", "fill:#" + colorWallpaper(i));
+          $("#mp" + i).find("path").attr("style", "fill:#" + colorWallpaper(i));
+          $("#wp" + i).find("path").attr("style", "fill:#" + colorWallpaper(i));
       }
     }
     else {
@@ -409,14 +404,11 @@ function menWomenColor(color)
 function displayDataMW(id)
 {
     for (var i = 0 ; i < nbMW ; i++) {
-        msg = statesDeathData[id].maleEthnicity[yearToDisplay][i];
-        msg += "<br/>";
-        msg += statesPopulationData[id].maleEthnicity[yearToDisplay][i]
-        $("#dataM" + i).html(msg).css("color", "#EEE");
-        msg = statesDeathData[id].femaleEthnicity[yearToDisplay][i];
-        msg += "<br>";
-        msg += statesPopulationData[id].femaleEthnicity[yearToDisplay][i]
-        $("#dataW" + i).html(msg).css("color", "#EEE");
+        msg = "<span class=\"colorDeath\">" + statesDeathData[id].maleEthnicity[yearToDisplay][i] + "</span> /<br /><span class=\"colorPop\">" + statesPopulationData[id].maleEthnicity[yearToDisplay][i] + "</span>";
+        $("#dataM" + i).html(msg);
+        msg = "<span class=\"colorDeath\">" + statesDeathData[id].femaleEthnicity[yearToDisplay][i] + "</span> /<br /><span class=\"colorPop\">" + statesPopulationData[id].femaleEthnicity[yearToDisplay][i] + "</span>";
+        $("#dataW" + i).html(msg);
+        $(".personBox").each(function(){$(this).css("color", "#EEE");});
     }
 }
 
@@ -428,7 +420,7 @@ function addText(p, name, i)
     $("#map").append("<div class=\"stateName noselect\" id=\"stateName" + i + "\" style=\"top:" + top + "px;left:" + left + "px\">" + name + "</div>");
 }
 
-function addDescriptionMW(right) {
+function addDescriptionMW() {
     var name = ["Black", "White", "Native", "Asian"];
     for (var i = 0; i < nbMW; i++) {
         $("#mp" + i).prepend("<b>" + name[i] + "</b><br />");
@@ -442,10 +434,8 @@ function setLegend()
 {
     $("#leg_color_1").css("background", "#" + MAP_MIN_COLOR);
     $("#leg_color_2").css("background", "#" + MAP_MAX_COLOR);
-    $("#leg_color_3").css("background", "#" + WALLPAPER_WHITE);
-    $("#leg_color_4").css("background", "#" + WALLPAPER_BLACK);
-    $("#leg_color_5").css("background", "#" + WALLPAPER_NAUSA);
-    $("#leg_color_6").css("background", "#" + WALLPAPER_ASIAN);
+    $("#leg_color_3").css("background", "#3399CC");
+    $("#leg_color_4").css("background", "#BE4141");
 }
 
 function updateTimeline()
