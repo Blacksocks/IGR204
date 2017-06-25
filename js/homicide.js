@@ -108,8 +108,8 @@ var currState = -1;
 //Number of men and women to display. 4 men and 4 women.
 var nbMW = 4;
 //Top and bottom margins for men and women display
-var marginTop = 20;
-var marginBottom = 30;
+var marginTop = 40;
+var marginBottom = 60;
 //Year chosen to display information
 var yearToDisplay = 0;
 var scrolling = 0;
@@ -432,10 +432,10 @@ function addText(p, name, i)
 function addDescriptionMW(right) {
   var name = ["Black", "White", "Native", "Asian"];
   for (var i = 0 ; i < nbMW ; i++) {
-  $(".wallpaper").append("<div class=\"descriptionMW noselect\" id=\"description" + 2*i + "\" style=\"top:" + (marginTop-20) + "px;right:" + (right[nbMW - 1 - i]+13) + "px\">" + name[i] + "</div>");
+  $(".wallpaper").append("<div class=\"descriptionMW noselect\" id=\"description" + 2*i + "\" style=\"top:" + (marginTop-22) + "px;right:" + (right[nbMW - 1 - i]+13) + "px\">" + name[i] + "</div>");
   $(".wallpaper").append("<div class=\"descriptionMW noselect\" id=\"description" + (2*i+1) + "\" style=\"bottom:" + (marginBottom+ $("#wp1").height()) + "px;right:" + (right[nbMW - 1 - i]+11)+ "px\">" + name[i] + "</div>");
-  $(".wallpaper").append("<div class=\"dataMW noselect\" id=\"dataM" + i + "\" style=\"top:" + (marginTop+$("#wp1").height()) + "px;right:" + (right[nbMW - 1 - i]+13) + "px\"> </div>");
-  $(".wallpaper").append("<div class=\"dataMW noselect\" id=\"dataW" + i + "\" style=\"bottom:" + (marginBottom-30) + "px;right:" + (right[nbMW - 1 - i]+11)+ "px\"> </div>");
+  $(".wallpaper").append("<div class=\"dataMW noselect\" id=\"dataM" + i + "\" style=\"top:" + (marginTop+$("#wp1").height() + 2) + "px;right:" + (right[nbMW - 1 - i]+13) + "px\"> </div>");
+  $(".wallpaper").append("<div class=\"dataMW noselect\" id=\"dataW" + i + "\" style=\"bottom:" + (marginBottom-40) + "px;right:" + (right[nbMW - 1 - i]+11)+ "px\"> </div>");
   }
 }
 
