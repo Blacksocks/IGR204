@@ -6,7 +6,7 @@
  var COLOR_NO       = "ea5455";
  var COLOR_YES      = "45c966";
  var COLOR_WEAPON   = "0070FF";
- var COLOR_RELATION = "E87300";
+ var COLOR_RELATION = "FFA600";
 
 // Dimensions of sunburst.
 var width_chart = Math.round($(window).width() * 0.8);
@@ -310,5 +310,8 @@ function setLegend()
 }
 
 var url = new URL(window.location.href);
-sunburst(url.searchParams.get("state"));
+var state = url.searchParams.get("state");
+// set title
+$("#title").html("Distribution of <span class=\"yellow\">weapon</span> used and <span class=\"blue\">relationship</span> in <span class=\"red\">" + state + "</span>");
+sunburst(state);
 setLegend();
