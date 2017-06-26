@@ -312,6 +312,6 @@ function setLegend()
 var url = new URL(window.location.href);
 var state = url.searchParams.get("state");
 // set title
-$("#title").html("Distribution of <span class=\"blue\">weapons</span> used and <span class=\"yellow\">relationships</span> with victims in <span class=\"darkGreen\">" + state + "</span>");
+$("#title").html("Distribution of <span class=\"blue\">weapons</span> used and <span class=\"yellow\">relationships</span> with victims in <span class=\"purple\">" + state + "</span>");
 sunburst(state);
 setLegend();
