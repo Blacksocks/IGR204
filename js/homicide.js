@@ -11,8 +11,8 @@ var WALLPAPER_ASIAN = "E9A357";
 var WALLPAPER_BLACK = "633C1D";
 var WALLPAPER_EMPTY = "111111";
 var MAP_STROKE      = "222222";
-var MAP_MIN_COLOR   = "41BE41";
-var MAP_MAX_COLOR   = "BE4141";
+var MAP_MIN_COLOR   = "33CC33";
+var MAP_MAX_COLOR   = "CC3333";
 var MIN_DATE        = 1990;
 var MAX_DATE        = 2014;
 var DEATH_ONLY      = 0;
@@ -77,13 +77,13 @@ function PopulationInState(name) {
 
 // map position and size
 var ratio = 1.67; // width on height country ratio
-var width = $(window).width() * 0.75;
+var width = $(window).width() * 0.72;
 var height = width / ratio;
 if($(window).width() / $(window).height() > ratio) {
-    height = $(window).height() * 0.75;
+    height = $(window).height() * 0.72;
     width = height * ratio;
 }
-$("#mapsvg").css("top", (($(window).height() - height) / 2) + "px");
+$("#mapsvg").css("top", (($(window).height() - height - 40) / 2) + "px");
 $("#mapsvg").css("left", (($(window).width() - width) / 10) + "px");
 var svg = d3.select('svg')
     .style("width", width + 'px')
@@ -120,9 +120,10 @@ var marginBottom = 20;
 var yearToDisplay = 0;
 var scrolling = 0;
 //Display death only, death linked with population, or population only.
-var whatToDisplay = DEATH_AND_POP;
+var whatToDisplay = DEATH_ONLY;
 var minCurrDisp = 0;
 var maxCurrDisp = 0;
+
 /* =========================================== */
 /* ================== FUNCTIONS ============== */
 /* =========================================== */
@@ -193,7 +194,7 @@ function loadData()
                     console.log("[ERROR] Year not found: " + d["State"]);
                     return;
                 }
-                year -= MIN_DATE
+                year -= MIN_DATE;
                 var raceIdx = 0;
                 if(d["Race"] == "White") raceIdx = 1;
                 else if(d["Race"] == "Native American/Alaska Native") raceIdx = 2;
@@ -355,10 +356,7 @@ function dataReady(error, us)
         statesDeathData[i].id = idlnk_[i];
         idlnk[idlnk_[i]] = i;
     }
-    // set color
-    for(var i = 0; i < idlnk_.length; i++)
-        statesDeathData[i].color = getColor(i);
-    showAllStates();
+    updateColors();
     setWallpaper();
     setStateNames();
 }
@@ -503,6 +501,15 @@ function setLegend()
     $("#leg_color_4").css("background", "#BE4141");
 }
 
+function updateColors()
+{
+    getMinMaxCurrStat();
+    // reset color
+    for(var i = 0; i < idlnk_.length; i++)
+        statesDeathData[i].color = getColor(i);
+    showAllStates();
+}
+
 function updateTimeline()
 {
     var maxPx = $("#timeline").width();
@@ -518,11 +525,7 @@ function updateTimeline()
         "left": textPos
     }, time);
     $("#date-timeline").text(yearToDisplay + MIN_DATE);
-    getMinMaxCurrStat();
-    // reset color
-    for(var i = 0; i < idlnk_.length; i++)
-        statesDeathData[i].color = getColor(i);
-    showAllStates();
+    updateColors();
     if (currState != -1)
       displayDataMW(currState);
 }
@@ -533,6 +536,96 @@ function onTimeline(e)
     var date = Math.round(e.pageX*(MAX_DATE - MIN_DATE) / maxPx + MIN_DATE);
     yearToDisplay = date - MIN_DATE;
     updateTimeline();
+}
+
+function displayOnMap(data)
+{
+    $("#radio1" + data + " .check").css('display', 'block');
+    $("#radio1" + ((data + 1) % 3) + " .check").css('display', 'none');
+    $("#radio1" + ((data + 2) % 3) + " .check").css('display', 'none');
+    if(data == POP_ONLY)
+        displayPop();
+    else if(data == DEATH_AND_POP)
+        displayDeathAndPop();
+    else
+        displayDeath();
+    updateTimeBack();
+}
+
+function displayDeath()
+{
+    whatToDisplay = DEATH_ONLY;
+    $("#titleBanner").html("Compared to other states, the number of homicides in a precise year is displayed for each state");
+    updateColors();
+}
+
+function displayPop()
+{
+    whatToDisplay = POP_ONLY;
+    $("#titleBanner").html("Compared to other states, the population in a precise year is displayed for each state");
+    updateColors();
+}
+
+function displayDeathAndPop()
+{
+    whatToDisplay = DEATH_AND_POP;
+    $("#titleBanner").html("Compared to other states, the number of homicides over the population in a precise year is displayed for each state");
+    updateColors();
+}
+
+function mmNationWide()
+{
+    var min = nationWideValue(0);
+    var max = min;
+    for(var i = 1; i <= MAX_DATE - MIN_DATE; i++) {
+        var tmp = nationWideValue(i);
+        if(tmp < min)
+            min = tmp;
+        else if(tmp > max)
+            max = tmp;
+    }
+    return [min, max];
+}
+
+function nationWideValue(i)
+{
+    if(whatToDisplay == POP_ONLY)
+        return populationNationWide[i];
+    if(whatToDisplay == DEATH_AND_POP)
+        return deathNationWide[i] / populationNationWide[i];
+    return deathNationWide[i];
+}
+
+function updateTimeBack()
+{
+    var maxPx = $("#timeline").width();
+    var maxH = $("#timeline").height();
+    var step = maxPx / (MAX_DATE - MIN_DATE);
+    var mm = mmNationWide();
+    var c=document.getElementById("timeBack");
+    var ctx=c.getContext("2d");
+    ctx.clearRect(0, 0, maxPx, maxH);
+    ctx.fillStyle = "#222";
+    var xPos = 0;
+    ctx.beginPath();
+    ctx.moveTo(xPos, maxH);
+    for(var i = 0; i <= MAX_DATE - MIN_DATE; i++)
+    {
+        ctx.lineTo(xPos, maxH - (nationWideValue(i) - mm[0]) * (maxH * 0.9) / (mm[1] - mm[0]));
+        xPos += step;
+    }
+    xPos -= 1;
+    ctx.lineTo(xPos, maxH);
+    ctx.fill();
+}
+
+function initTimeBack()
+{
+    var maxPx = $("#timeline").width();
+    var maxH = $("#timeline").height();
+    $("#timeBack").attr("width", maxPx + "px");
+    $("#timeBack").attr("height", "60px");
+    updateTimeBack();
 }
 
 // Mouse wheel scrolling event
@@ -566,7 +659,8 @@ $(window).bind('mousewheel DOMMouseScroll', function(event){
 
 setLegend();
 loadData();
-
 $(document).ready(function(){
 	$("#timeline").click(function(e) {onTimeline(e);});
+    initTimeBack();
+    $("#radio10 .check").css('display', 'block');
 });

@@ -26,12 +26,19 @@
                     <tr><td><div class="text title nomargintop">States</div></td><td><div class="title nomargintop"></div></td></tr>
                     <tr><td><span class="text small">Min. number of homicides</span></td><td><div class="color" id="leg_color_1"></div></td></tr>
                     <tr><td><span class="text small">Max. number of homicides</span></td><td><div class="color" id="leg_color_2"></div></td></tr>
-                    <tr><td><div class="text title">Population</div></td><td><div class="title"></div></td></tr>
+                    <tr><td><div class="text title">Population and death</div></td><td><div class="title"></div></td></tr>
                     <tr><td><span class="text small">Population in a state</span></td><td><div class="color" id="leg_color_3"></div></td></tr>
                     <tr><td><span class="text small">Number of death</span></td><td><div class="color" id="leg_color_4"></div></td></tr>
+                    <tr><td><div class="text title">Data displayed on map</div></td><td><div class="title"></div></td></tr>
+                    <tr><td><span class="text small">Display number of homicides</span></td><td><div class="color radio" id="radio10" onclick="displayOnMap(0)"><div class="check"></div></div></td></tr>
+                    <tr><td><span class="text small">Display only population</span></td><td><div class="color radio" id="radio11" onclick="displayOnMap(1)"><div class="check"></div></div></td></tr>
+                    <tr><td><span class="text small">Display nb. of homicides / pop.</span></td><td><div class="color radio" id="radio12" onclick="displayOnMap(2)"><div class="check"></div></div></td></tr>
                 </table>
             </div>
         </div>
+        <div id="titleBanner">Compared to other states, the number of homicides in a precise year is displayed for each state</div>
+        <canvas id="timeBack"></canvas>
+        <div id="timeline-bg"></div>
         <div id="timeline" title="You can use mouse wheel to move on the timeline"><center>
     		<div class="timeline-content" id="timeline-content">
     			<div id="date-timeline">1990</div>
