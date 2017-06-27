@@ -15,6 +15,9 @@ var MAP_MIN_COLOR   = "41BE41";
 var MAP_MAX_COLOR   = "BE4141";
 var MIN_DATE        = 1990;
 var MAX_DATE        = 2014;
+var DEATH_ONLY      = 0;
+var POP_ONLY        = 1;
+var DEATH_AND_POP   = 2;
 
 /* =========================================== */
 /* ============ CONVERSION DATA ============== */
@@ -38,12 +41,12 @@ var months = ["January", "January", "February", "March", "April", "May",
 function DeathInState(name) {
     this.name = name;
     this.id = 0;
-    this.death = [25];  // number of death (men + women)
-    this.men = [25];    // number of death (men)
+    this.death = [MAX_DATE-MIN_DATE+1];  // number of death (men + women)
+    this.men = [MAX_DATE-MIN_DATE+1];    // number of death (men)
     // Black, White, Native American, Asian
-    this.femaleEthnicity = [25];
-    this.maleEthnicity = [25];
-    for (var i = 0 ; i < 25 ; i++) {
+    this.femaleEthnicity = [MAX_DATE-MIN_DATE+1];
+    this.maleEthnicity = [MAX_DATE-MIN_DATE+1];
+    for (var i = 0 ; i < MAX_DATE-MIN_DATE+1 ; i++) {
       this.death[i] = 0;
       this.men[i] = 0;
       this.femaleEthnicity[i] = [0, 0, 0, 0];
@@ -55,18 +58,17 @@ function DeathInState(name) {
 function PopulationInState(name) {
   this.name = name;
   this.id = 0;
-  this.population = [25]; //Whole population
-  this.men = [25]; //Number of men in population
+  this.population = [MAX_DATE-MIN_DATE+1]; //Whole population
+  this.men = [MAX_DATE-MIN_DATE+1]; //Number of men in population
   //Black, White, Native, Asian
-  this.femaleEthnicity = [25];
-  this.maleEthnicity = [25];
-  for (var i = 0 ; i < 25 ; i++) {
+  this.femaleEthnicity = [MAX_DATE-MIN_DATE+1];
+  this.maleEthnicity = [MAX_DATE-MIN_DATE+1];
+  for (var i = 0 ; i < MAX_DATE-MIN_DATE+1 ; i++) {
     this.population[i] = 0;
     this.men[i] = 0;
     this.femaleEthnicity[i] = [0, 0, 0, 0];
     this.maleEthnicity[i] = [0, 0, 0, 0];
   }
-
 }
 
 /* =========================================== */
@@ -90,12 +92,16 @@ var svg = d3.select('svg')
 var statesPopulationData = [];
 for(var i = 0; i < statesNames.length; i++)
     statesPopulationData[i] = new PopulationInState(statesNames[i]);
+var populationNationWide = [MAX_DATE-MIN_DATE+1];
+for (var i = 0 ; i < MAX_DATE-MIN_DATE+1 ; i++)
+    populationNationWide[i] = 0;
 // init states homicides data
 var statesDeathData = [];
 for(var i = 0; i < statesNames.length; i++)
     statesDeathData[i] = new DeathInState(statesNames[i]);
-var minDeath = 0;
-var maxDeath = 0;
+var deathNationWide = [MAX_DATE-MIN_DATE+1];
+for (var i = 0 ; i < MAX_DATE-MIN_DATE+1 ; i++)
+    deathNationWide[i] = 0;
 var path = d3.geoPath();
 // convert state id to statesNames array index
 var idlnk = [];
@@ -113,20 +119,13 @@ var marginBottom = 20;
 //Year chosen to display information
 var yearToDisplay = 0;
 var scrolling = 0;
-
+//Display death only, death linked with population, or population only.
+var whatToDisplay = DEATH_AND_POP;
+var minCurrDisp = 0;
+var maxCurrDisp = 0;
 /* =========================================== */
 /* ================== FUNCTIONS ============== */
 /* =========================================== */
-
-function getMinMaxDeath()
-{
-    minDeath = statesDeathData[0].death[yearToDisplay];
-    maxDeath = minDeath;
-    for(var i = 1; i < statesNames.length; i++) {
-        if(statesDeathData[i].death[yearToDisplay] < minDeath && statesDeathData[i].death[yearToDisplay] != 0) minDeath = statesDeathData[i].death[yearToDisplay];
-        else if(statesDeathData[i].death[yearToDisplay] > maxDeath) maxDeath = statesDeathData[i].death[yearToDisplay];
-    }
-}
 
 function loadData()
 {
@@ -179,6 +178,8 @@ function loadData()
                 }
                 statesPopulationData[stateIdx].population[year] += parseInt(d["Population"], 10);
                 if (d["Sex"] == 1) statesPopulationData[stateIdx].men[year] += parseInt(d["Population"], 10);
+                populationNationWide[year] += parseInt(d["Population"], 10);
+
             });
             hdata.map(function(d) {
                 // for each homicide
@@ -205,9 +206,10 @@ function loadData()
                 statesDeathData[stateIdx].femaleEthnicity[year][raceIdx] += +d["Women"];
                 statesDeathData[stateIdx].death[year] += +d["Men"] + +d["Women"];
                 statesDeathData[stateIdx].men[year] += +d["Men"];
+                deathNationWide[year] += +d["Men"] + +d["Women"];
             });
             //update min and max
-            getMinMaxDeath();
+            getMinMaxCurrStat();
             // load map
             d3.queue()
                 .defer(d3.json, "https://d3js.org/us-10m.v1.json")
@@ -216,22 +218,85 @@ function loadData()
     });
 }
 
-function c(x)
+function sq(x)
 {
     return Math.sqrt(x);
 }
 
+function cb(x)
+{
+    return Math.cbrt(x);
+}
+
 function getColor(id)
 {
-    var cst = (c(statesDeathData[id].death[yearToDisplay]) - c(minDeath)) / (c(maxDeath) - c(minDeath));
+    var x = -1;
+    if (whatToDisplay == DEATH_ONLY) {
+      x = statesDeathData[id].death[yearToDisplay];
+      var cstCurrYear = (sq(x) - sq(minCurrDisp)) / (sq(maxCurrDisp) - sq(minCurrDisp));
+    }
+    else if (whatToDisplay == POP_ONLY) {
+      x = statesPopulationData[id].population[yearToDisplay];
+      if (x > 4000000)
+        var cstCurrYear = (cb(x) - cb(minCurrDisp)) / (cb(maxCurrDisp) - cb(minCurrDisp));
+      else {
+        var cstCurrYear = (sq(x) - sq(minCurrDisp)) / (sq(maxCurrDisp) - sq(minCurrDisp));
+      }
+      if (cstCurrYear > 1) cstCurrYear = 1;
+    }
+    else if (whatToDisplay == DEATH_AND_POP) {
+      if (id == 8) //District of Colombia
+        return "#BE4141";
+      var x = statesDeathData[id].death[yearToDisplay] / statesPopulationData[id].population[yearToDisplay];
+      var cstCurrYear = (Math.pow(x,0.8) - sq(minCurrDisp)) / (Math.pow(maxCurrDisp,0.8) - sq(minCurrDisp));
+    }
     var res = "#";
     for(var i = 0; i < 3; i++) {
         var minColor = parseInt("0x" + MAP_MIN_COLOR.substr(2 * i, 2).toString(10));
         var maxColor = parseInt("0x" + MAP_MAX_COLOR.substr(2 * i, 2).toString(10));
-        var val = Math.round(cst * (maxColor - minColor) + minColor);
+        var val = Math.round(cstCurrYear * (maxColor - minColor) + minColor);
         res += (val < 16 ? "0" : "") + val.toString(16);
     }
     return res;
+}
+
+function getMinMaxCurrStat()
+{
+    if (whatToDisplay == DEATH_ONLY) {
+      minCurrDisp = statesDeathData[0].death[yearToDisplay];
+      maxCurrDisp = minCurrDisp;
+      for (var y = 0 ; y < MAX_DATE - MIN_DATE ; y++) {
+        for(var i = 0; i < statesNames.length; i++) {
+            if(statesDeathData[i].death[y] < minCurrDisp && statesDeathData[i].death[y] != 0) minCurrDisp = statesDeathData[i].death[y];
+            else if(statesDeathData[i].death[y] > maxCurrDisp) maxCurrDisp = statesDeathData[i].death[y];
+        }
+      }
+    }
+    else if (whatToDisplay == POP_ONLY) {
+      minCurrDisp = statesPopulationData[0].population[0];
+      maxCurrDisp = minCurrDisp;
+      for (var y = 0 ; y < MAX_DATE - MIN_DATE ; y++) {
+        for(var i = 0; i < statesNames.length; i++) {
+            if(statesPopulationData[i].population[y] < minCurrDisp && statesPopulationData[i].population[y] != 0) minCurrDisp = statesPopulationData[i].population[y];
+            else if(statesPopulationData[i].population[y] > maxCurrDisp) maxCurrDisp = statesPopulationData[i].population[y];
+        }
+      }
+    }
+    else if (whatToDisplay == DEATH_AND_POP) {
+      minCurrDisp = statesDeathData[0].death[yearToDisplay]/statesPopulationData[0].population[yearToDisplay];
+      maxCurrDisp = minCurrDisp;
+      for (var year = 0 ; year < MAX_DATE - MIN_DATE ; year++) {
+        for(var i = 0; i < statesNames.length; i++) {
+          if (i == 8) i = 9; //Skipping District of Columbia
+            var x = statesDeathData[i].death[year];
+            var y = statesPopulationData[i].population[year];
+            if (y != 0) {
+              if(x/y < minCurrDisp) minCurrDisp = x/y;
+              else if(x/y > maxCurrDisp) maxCurrDisp = x/y;
+            }
+        }
+      }
+    }
 }
 
 function showAllStates()
@@ -453,7 +518,7 @@ function updateTimeline()
         "left": textPos
     }, time);
     $("#date-timeline").text(yearToDisplay + MIN_DATE);
-    getMinMaxDeath();
+    getMinMaxCurrStat();
     // reset color
     for(var i = 0; i < idlnk_.length; i++)
         statesDeathData[i].color = getColor(i);
