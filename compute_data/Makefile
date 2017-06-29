@@ -11,7 +11,9 @@ COMPUTE_OUT = "../data/sunburst"
 CFLAGS      = -std=gnu99 -Werror -Wall -Wextra
 LDLIBS     = -lm
 
-.PHONY: reduce compute pop
+.PHONY: reduce compute pop all default
+
+all: reduce compute pop
 
 default:
 	@echo "use 'make reduce' or 'make compute' or 'make pop'"

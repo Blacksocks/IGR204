@@ -611,7 +611,7 @@ function updateTimeBack()
     ctx.moveTo(xPos, maxH);
     for(var i = 0; i <= MAX_DATE - MIN_DATE; i++)
     {
-        ctx.lineTo(xPos, maxH - (nationWideValue(i) - mm[0]) * (maxH * 0.9) / (mm[1] - mm[0]));
+        ctx.lineTo(xPos, maxH - (nationWideValue(i)) * (maxH * 0.9) / (mm[1]));
         xPos += step;
     }
     xPos -= 1;
