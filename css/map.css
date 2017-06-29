@@ -51,7 +51,6 @@ body {
 }
 #map .stateName {
     font-size: 14px;
-    height: 18px;
     position: fixed;
     display: none;
     text-transform: uppercase;
@@ -85,6 +84,10 @@ body {
 }
 #map .colorPop {
     color: #3399CC;
+}
+
+#map .colorPercentage {
+    color: #EEEEEE;
 }
 #map #legend {
     width: 36px;

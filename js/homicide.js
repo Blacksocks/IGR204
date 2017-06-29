@@ -467,9 +467,13 @@ function menWomenColor(color)
 function displayDataMW(id)
 {
     for (var i = 0 ; i < nbMW ; i++) {
-        msg = "<span class=\"colorDeath\">" + statesDeathData[id].maleEthnicity[yearToDisplay][i] + "</span> /<br /><span class=\"colorPop\">" + statesPopulationData[id].maleEthnicity[yearToDisplay][i] + "</span>";
+        msg = "<span class=\"colorDeath\">" + statesDeathData[id].maleEthnicity[yearToDisplay][i] +
+        "</span> /<br /><span class=\"colorPop\">" + statesPopulationData[id].maleEthnicity[yearToDisplay][i] + "</span>" +
+        " <br /> <span class=\"colorPercentage \">" + (10000*statesDeathData[id].maleEthnicity[yearToDisplay][i]/statesPopulationData[id].maleEthnicity[yearToDisplay][i]).toPrecision(2) + "&#8241;</span>";
         $("#dataM" + i).html(msg);
-        msg = "<span class=\"colorDeath\">" + statesDeathData[id].femaleEthnicity[yearToDisplay][i] + "</span> /<br /><span class=\"colorPop\">" + statesPopulationData[id].femaleEthnicity[yearToDisplay][i] + "</span>";
+        msg = "<span class=\"colorDeath\">" + statesDeathData[id].femaleEthnicity[yearToDisplay][i] +
+        "</span> /<br /><span class=\"colorPop\">" + statesPopulationData[id].femaleEthnicity[yearToDisplay][i] + "</span>" +
+        " <br /> <span class=\"colorPercentage \">" + (10000*statesDeathData[id].femaleEthnicity[yearToDisplay][i]/statesPopulationData[id].femaleEthnicity[yearToDisplay][i]).toPrecision(2) + "&#8241;</span>";
         $("#dataW" + i).html(msg);
         $(".personBox").each(function(){$(this).css("color", "#EEE");});
     }
@@ -480,7 +484,9 @@ function addText(p, name, i)
     var b = p.getBBox();
     var top = Math.round(b.y * width / 1000 + b.height / 2 + $("#mapsvg").offset().top);
     var left = Math.round(b.x * width / 1000 + b.width / 2 + $("#mapsvg").offset().left);
-    $("#map").append("<div class=\"stateName noselect\" id=\"stateName" + i + "\" style=\"top:" + top + "px;left:" + left + "px\">" + name + "</div>");
+    $("#map").append("<div class=\"stateName noselect\" id=\"stateName" + i + "\" style=\"top:" + top + "px;left:" + left + "px\">" + name +
+                  "<br />" + "<span class=\"colorDeath \" >" + statesDeathData[i].death[yearToDisplay] + "</span> /" +
+                  "<br />" + "<span class=\"colorPop \" >" + statesPopulationData[i].population[yearToDisplay] + "</span></div>");
 }
 
 function addDescriptionMW() {
