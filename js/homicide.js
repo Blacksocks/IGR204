@@ -561,21 +561,21 @@ function displayOnMap(data)
 function displayDeath()
 {
     whatToDisplay = DEATH_ONLY;
-    $("#titleBanner").html("Compared to other states, the number of homicides in a precise year is displayed for each state");
+    $("#titleBanner").html("Display of homicides for the selected year");
     updateColors();
 }
 
 function displayPop()
 {
     whatToDisplay = POP_ONLY;
-    $("#titleBanner").html("Compared to other states, the population in a precise year is displayed for each state");
+    $("#titleBanner").html("Display of the population for the selected year");
     updateColors();
 }
 
 function displayDeathAndPop()
 {
     whatToDisplay = DEATH_AND_POP;
-    $("#titleBanner").html("Compared to other states, the number of homicides over the population in a precise year is displayed for each state");
+    $("#titleBanner").html("Display of ratio homicides/population for the selected year");
     updateColors();
 }
 
