@@ -1,0 +1,17 @@
+IGR 204, Vizualisation project,
+Vincent Gaillard
+Website: http://vincent-gaillard.fr/igr204/
+GitHub: https://github.com/Blacksocks/IGR204
+Global contribution (partially according to github contribution):
+	Bisogno Vincent: 40%
+	Desplanques Ronan: 0%
+	Fenioux Roman: 5%
+	Gaillard Vincent: 55%
+
+In the group, I was globally the main contributor on website and poster.
+More specifically, I firstly build the project architecture; git initialization, web hosting, first website version, C compressing program and Makefile.
+I made the data parsing program to compress one of the two data files. Homicide file were too heavy to be processed in js during each page loading.
+I developed the vast majority of css and html code and a significant part of the js program.
+I also made the poster.
+Finally, I slightly helped to correct the report.
+
